@@ -1,5 +1,5 @@
 #!/bin/sh
-cd /var/www/qoqon/backups/
+cd /var/www/insonlar/backups/
 
 OUTPUT="$(ls -t mon*5\-*\-*\_*_*.bak.tgz | head -1)"
 if [ -f $OUTPUT ]; then
@@ -15,6 +15,6 @@ fi
 
 THE_DATE=$(date +"%d-%m-%Y_%H_%M")
 /usr/bin/mongodump --db=qoqon --out=./
-tar -czvf mongo_qoqon_${THE_DATE}.bak.tgz ./qoqon/
-rm -rf ./qoqon
-find /var/www/qoqon/backups/mongo_*.bak.* -mtime +15 -exec rm {} \;
+tar -czvf mongo_inson_${THE_DATE}.bak.tgz ./inson/
+rm -rf ./inson
+find /var/www/insonlar/backups/mongo_*.bak.* -mtime +15 -exec rm {} \;
