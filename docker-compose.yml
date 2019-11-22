@@ -1,0 +1,25 @@
+version: '2'
+
+services:
+  php:
+    image: yiisoftware/yii2-php:7.2-apache
+    container_name: saxovat
+    volumes:
+      - ~/.composer-docker/cache:/root/.composer/cache:delegated
+      - ./:/app:delegated
+      - ./docker/apache/vhosts:/etc/apache2/sites-enabled:delegated
+      - ./docker/apache/logs:/var/log/apache2:delegated
+    ports:
+      - '0.0.0.0:8000:80'
+    extra_hosts:
+      - "saxovat.lc:127.0.0.1"
+      - "api.saxovat.lc:127.0.0.1"
+      - "static.saxovat.lc:127.0.0.1"
+      - "backend.saxovat.lc:127.0.0.1"
+    links:
+      - mongo
+  mongo:
+    image: mongo:latest
+    container_name: saxovat_mongo
+    volumes:
+      - /var/www/docker/mongodb/saxovat:/data/db

@@ -1,0 +1,17 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine on
+
+  # force ssl
+    #RewriteCond %{HTTPS} off
+    #RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+    RewriteRule ^favicon.* - [L]
+    RewriteRule ^themes/ - [L]
+    RewriteRule ^assets/ - [L]
+    RewriteRule ^uploads/ - [L]
+    # If a directory or a file exists, use it directly
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    # Otherwise forward it to index.php
+    RewriteRule . index.php
+</IfModule>
