@@ -18,7 +18,7 @@ use yii\console\Controller;
 class AgrController extends Controller
 {
     protected $_localUrl = 'http://api.qoqon.lc/v1/agr/';
-    protected $_liveUrl  = 'http://api.saxovat.uz/v1/agr/';
+    protected $_liveUrl  = 'https://insonlar.mehrli.uz/v1/agr/';
 
     public function actionInfo($transId, $amount)
     {
@@ -133,7 +133,7 @@ class AgrController extends Controller
 
     protected function request($data, $action)
     {
-        $client = new Client();
+        $client = new Client(['verify'=>false]);
         $result = $client->post((YII_DEBUG ? $this->_localUrl : $this->_liveUrl) . $action,
             ['body' => json_encode($data)]);
 
