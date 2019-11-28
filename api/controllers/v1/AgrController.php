@@ -49,7 +49,12 @@ class AgrController extends Controller
 
     protected function processRequest($action)
     {
+
         try {
+            if(Yii::$app->request->getRawBody()=='test'){
+                throw new AgrRequestException('Error in request', -8);
+            }
+
             if (is_array($this->_postData)) {
                 return AgrApi::processApiRequest($this->_postData, $action);
             }
