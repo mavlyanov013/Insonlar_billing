@@ -20,7 +20,7 @@ class AgrController extends Controller
         $data                       = [
             'inp' => Yii::$app->request->getRawBody(),
         ];
-        Yii::trace(print_r($data, true), 'agr_trace');
+        Yii::error(print_r($data, true));
         die;
         return parent::beforeAction($action);
     }
