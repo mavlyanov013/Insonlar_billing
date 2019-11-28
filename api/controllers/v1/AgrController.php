@@ -16,7 +16,12 @@ class AgrController extends Controller
     public function beforeAction($action)
     {
         $this->_postData = @json_decode(Yii::$app->request->getRawBody(), true);
-
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $data                       = [
+            'inp' => Yii::$app->request->getRawBody(),
+        ];
+        Yii::trace(print_r($data, true), 'agr_trace');
+        die;
         return parent::beforeAction($action);
     }
 
