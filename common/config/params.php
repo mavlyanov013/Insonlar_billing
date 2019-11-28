@@ -21,8 +21,8 @@ return [
             'config'   => [
                 'minAmount'   => 500,
                 'maxAmount'   => 100000000,
-                'vendor_id'   => '100253',
-                'secret_key'  => 'B1HIWj2ZO+kwAvchchO93@8Nu4xU64j9',
+                'vendor_id'   => '100304',
+                'secret_key'  => 'RtKSIS2XskblblBgniFuXLgNEcNVgQN6',
                 'payment_url' => AGR_LIVE ? 'https://agr.uz/pay' : 'https://agr.uz/sandbox',
                 'return_url'  => AGR_LIVE ? 'http://www.qurbonlik.uz/order/success' : 'http://www.qurbonlik.uz/order/success',
             ],
