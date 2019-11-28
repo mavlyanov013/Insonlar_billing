@@ -8,6 +8,7 @@ use common\models\payment\methods\agr\AgrRequestException;
 use Yii;
 use yii\base\Exception;
 use yii\rest\Controller;
+use yii\web\Response;
 
 class AgrController extends Controller
 {
@@ -17,11 +18,7 @@ class AgrController extends Controller
     {
         $this->_postData = @json_decode(Yii::$app->request->getRawBody(), true);
         Yii::$app->response->format = Response::FORMAT_JSON;
-        $data                       = [
-            'inp' => Yii::$app->request->getRawBody(),
-        ];
-        Yii::error(print_r($data, true));
-        die;
+
         return parent::beforeAction($action);
     }
 
@@ -56,10 +53,6 @@ class AgrController extends Controller
     {
 
         try {
-            if(Yii::$app->request->getRawBody()=='test'){
-                throw new AgrRequestException('Error in request', -8);
-            }
-
             if (is_array($this->_postData)) {
                 return AgrApi::processApiRequest($this->_postData, $action);
             }
