@@ -22,110 +22,67 @@ use yii\imagine\Image;
 class IndexerController extends Controller
 {
 
-    public function actionTelegram($test = false)
+    public function actionTelegram($test = 0)
     {
         Yii::$app->language = 'uz-UZ';
-        $summ               = Payment::getTodayPaymentAmount();
-        $amount             = Yii::$app->formatter->asCurrency($summ);
-        $day                = date('d');
-        $last               = intval(Config::get("last_payment_$day"));
-        print_r(['day' => $day, 'lst' => $last, 'now' => $summ]);
+        $text               = Yii::$app->formatter->asInteger(Payment::getTodayPaymentAmount());
 
-        if ($summ  > 0 || $test) {
-            $count = Payment::getTodayPaymentCount();
+        $quicksand = Yii::getAlias('@frontend/assets/vendor/fonts/Quicksand-Regular.otf');
+        $image     = imagecreatefromjpeg(Yii::getAlias('@frontend/assets/app/images/stat.jpg'));
+        $width     = imagesx($image);
+        $height    = imagesy($image);
+        $centerX   = $width / 2;
+        $centerY   = $height / 2;
 
-            $hour  = date('H:i');
-            $month = Yii::$app->formatter->asDate(time(), 'php:mm');
+        list($left, $bottom, $right, , , $top) = imageftbbox(40, 0, Yii::getAlias('@frontend/assets/vendor/fonts/Poppins-Bold.ttf'), $text);
+        $left_offset = ($right - $left) / 2;
+        $top_offset  = ($bottom - $top) / 2;
+        $x           = $centerX - $left_offset;
 
-            $image   = imagecreatefromjpeg(Yii::getAlias('@frontend/assets/app/images/donate_stat.jpg'));
-            $width   = imagesx($image);
-            $height  = imagesy($image);
-            $centerX = $width / 2;
-            $centerY = $height / 2;
-            list($left, $bottom, $right, , , $top) = $ts = imageftbbox(30, 0, Yii::getAlias('@frontend/assets/vendor/fonts/Poppins-Bold.ttf'), $amount);
-            $left_offset = ($right - $left) / 2;
-            $top_offset  = ($bottom - $top) / 2;
-            $x           = abs($ts[4] - $ts[0]) + 10;
-            $y           = $centerY - $top_offset;
-            imagedestroy($image);
-            // write today amount
-            $image = Image::text(
-                Yii::getAlias('@frontend/assets/app/images/donate_stat.jpg'),
-                preg_replace("/[a-zA-Zа-я‘]+/", '', $amount), '@frontend/assets/vendor/fonts/Poppins-Bold.ttf',
-                [500 - ($left_offset + (strlen($amount) * 2)), 215],
-                ['color' => '000000', 'size' => 50]
-            );
+        $y     = $centerY - $top_offset;
+        $image = Image::text(
+            Yii::getAlias('@frontend/assets/app/images/stat.jpg'),
+            $text, '@frontend/assets/vendor/fonts/Poppins-Bold.ttf',
+            [$x, YII_ENV_DEV ? 185 : 185],
+            ['color' => '81256f', 'size' => 40]
+        );
 
-            $poppins = Image::getImagine()->font(
-                Yii::getAlias('@frontend/assets/vendor/fonts/Poppins-Bold.ttf'),
-                47,
-                new Color('000000'));
-
-            $quicksand = Image::getImagine()->font(
-                Yii::getAlias('@frontend/assets/vendor/fonts/Quicksand-Bold.otf'),
-                47,
-                new Color('000000'));
-
-            $quicksand_s = Image::getImagine()->font(
-                Yii::getAlias('@frontend/assets/vendor/fonts/Quicksand-Bold.otf'),
-                20,
-                new Color('000000'));
-            $font_h      = Image::getImagine()->font(
-                Yii::getAlias('@frontend/assets/vendor/fonts/Quicksand-Bold.otf'),
-                14,
-                new Color('000000'));
-
-            $left = strlen(Payment::getTodayPaymentCount()) * 10;
-            // write count members
-            $image->draw()->text($count, $poppins, new Point(500 - ((strlen($count) / 2) * 20), 25));
-            // write day
-            $image->draw()->text($day, $quicksand, new Point(75, 70));
-            // write month
-            $image->draw()->text($month, $quicksand_s, new Point(75, 140));
-            $image->draw()->text($hour, $font_h, new Point(80, 170));
-            // $image->draw()->polygon([new Point(40, 200), new Point(182, 200), new Point(182, 230), new Point(40, 230)], new Color('ffff00'), true);
-
-            $dir  = Yii::getAlias('@static/uploads');
-            $time = time();
-
-            $imageFile = $dir . "/donate_{$time}.jpg";
-            $image->save($imageFile);
+        $bottomText = __('{date}, {count} ta ishtirokchi', [
+            'count' => Payment::getTodayPaymentCount(),
+            'date'  => mb_strtolower(Yii::$app->formatter->asDate(time(), 'php:d-F')),
+        ]);
 
 
-            $bot = new BotApi(getenv('BOT_TOKEN'));
+        list($left, $bottom, $right, , , $top) = imageftbbox(20, 0, $quicksand, $bottomText);
+        $font = Image::getImagine()->font($quicksand, 20, new Color('888888'));
+        $x = $centerX - ($right - $left) / 2;
 
-           /* $bot->setCurlOption(CURLOPT_PROXY, getenv('CURLOPT_PROXY'));
-            $bot->setCurlOption(CURLOPT_PROXYUSERPWD, getenv('CURLOPT_PROXYUSERPWD'));
-            $bot->setCurlOption(CURLOPT_FOLLOWLOCATION, 1);
-            $bot->setCurlOption(CURLOPT_RETURNTRANSFER, 1);
-            $bot->setCurlOption(CURLOPT_HEADER, 1);*/
+        $image->draw()->text($bottomText, $font, new Point($x, 750));
+        $dir  = Yii::getAlias('@static/uploads');
+        $time = 1;
+        time();
 
-            $chats = Config::getAsArray(Config::TELEGRAM_CHATS, []);
-            $file  = false;
+        $image->save($dir . "/donate_{$time}.jpg");
+        return;
+        $bot   = new BotApi(getenv('BOT_TOKEN'));
+        $chats = Config::getAsArray(Config::TELEGRAM_CHATS, []);
+        $file  = false;
+        try {
+            $file = $this->actionGenerateFile();
+        } catch (\Exception $e) {
+            echo $e->getMessage();
+        }
+        foreach ($chats as $item) {
             try {
-                $file = $this->actionGenerateFile();
-            } catch (\Exception $e) {
-                echo $e->getMessage();
-                echo "error at: " . $e->getTraceAsString();
-            }
-            foreach ($chats as $item) {
-                try {
-                    $bot->sendPhoto($item, new \CURLFile($imageFile));
-                } catch (Exception $exception) {
-                    echo $exception->getMessage() . ' ' . $item . ' code ' . $exception->getCode() . PHP_EOL;
-                }
+                $bot->sendPhoto($item, Yii::getAlias("@staticUrl/uploads/donate_{$time}.jpg?t={$time}"));
 
-                try {
-                    if ($file) {
-                        $bot->sendDocument($item, new \CURLFile($file), 'To‘lovlar');
-                    }
-                } catch (\Exception $e) {
-                    echo $exception->getMessage() . ' ' . $item . ' code ' . $exception->getCode() . PHP_EOL;
+                if ($file) {
+                    $bot->sendDocument($item, new \CURLFile($file), 'To‘lovlar');
                 }
+            } catch (Exception $exception) {
+                echo $exception->getMessage() . ' ' . $item . ' code ' . $exception->getCode() . PHP_EOL;
             }
         }
-
-        Config::set("last_payment_$day", $summ);
     }
 
 
@@ -138,27 +95,28 @@ class IndexerController extends Controller
         $content            = $this->renderPartial('@frontend/views/payments-pdf', ['date' => $date]);
 
         $pdf = new \kartik\mpdf\Pdf([
-            'mode'        => \kartik\mpdf\Pdf::MODE_UTF8,
-            'content'     => $content,
-            'filename'    => $file,
-            'destination' => \kartik\mpdf\Pdf::DEST_FILE,
-            'cssFile'     => '@frontend/assets/app/css/pdf.css',
-            'options'     => [
-                'title'   => 'To‘lov tarixi',
-                'subject' => "Saxovat Qo‘qon uchun $date ga qadar kunlik o‘tkazilgan summalar",
-            ],
-            'methods'     => [
-                'SetHeader' => ['"Saxovat Qo‘qon" Jamoat Xayriya Fondi ||Sana: ' . $date],
-                'SetFooter' => ['|{PAGENO}-sahifa|'],
-            ],
-        ]);
+                                        'mode'        => \kartik\mpdf\Pdf::MODE_UTF8,
+                                        'content'     => $content,
+                                        'filename'    => $file,
+                                        'destination' => \kartik\mpdf\Pdf::DEST_FILE,
+                                        'cssFile'     => '@frontend/assets/app/css/pdf.css',
+                                        'options'     => [
+                                            'title'   => 'To‘lov tarixi',
+                                            'subject' => "Mehrli qo‘llar uchun $date ga qadar kunlik o‘tkazilgan summalar",
+                                        ],
+                                        'methods'     => [
+                                            'SetHeader' => ['Mehrli qo‘llar ||Sana: ' . $date],
+                                            'SetFooter' => ['|{PAGENO}-sahifa|'],
+                                        ],
+                                    ]);
 
-        $pdf->getApi()->SetProtection(array(), '', 'saxovatquqonP@r0l2018' . date('d'), 128);
+        $pdf->getApi()->SetProtection(array(), '', 'saxovatP@r0l2018' . date('d'), 128);
 
         $pdf->render();
 
         return $file;
     }
+
 
     /**
      * every 1 minutes
