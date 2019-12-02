@@ -61,7 +61,7 @@ class IndexerController extends Controller
                 [
                     __('so\'m xayriya qilindi'),
                     36,
-                    670,
+                    665,
                     '555555',
                     $quicksandBold
                 ],
