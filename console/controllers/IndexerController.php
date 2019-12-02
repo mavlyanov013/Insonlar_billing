@@ -24,87 +24,91 @@ class IndexerController extends Controller
 
     public function actionTelegram($test = 0)
     {
+
         Yii::$app->language = 'uz-UZ';
         $summ               = Payment::getTodayPaymentAmount();
-        $count              = Payment::getTodayPaymentCount();
+        if ($summ || $test) {
+            $count = Payment::getTodayPaymentCount();
 
-        $quicksand     = Yii::getAlias('@frontend/assets/vendor/fonts/Quicksand-Regular.otf');
-        $quicksandBold = Yii::getAlias('@frontend/assets/vendor/fonts/Quicksand-Bold.otf');
-        $poppins       = Yii::getAlias('@frontend/assets/vendor/fonts/Poppins-Bold.ttf');
-        $imageFile     = Yii::getAlias('@frontend/assets/app/images/stat.jpg');
+            $quicksand     = Yii::getAlias('@frontend/assets/vendor/fonts/Quicksand-Regular.otf');
+            $quicksandBold = Yii::getAlias('@frontend/assets/vendor/fonts/Quicksand-Bold.otf');
+            $poppins       = Yii::getAlias('@frontend/assets/vendor/fonts/Poppins-Bold.ttf');
+            $imageFile     = Yii::getAlias('@frontend/assets/app/images/stat.jpg');
 
-        $image   = imagecreatefromjpeg($imageFile);
-        $width   = imagesx($image);
-        $height  = imagesy($image);
-        $centerX = $width / 2;
+            $image   = imagecreatefromjpeg($imageFile);
+            $width   = imagesx($image);
+            $height  = imagesy($image);
+            $centerX = $width / 2;
 
-        $image = Image::getImagine()->open($imageFile);
+            $image = Image::getImagine()->open($imageFile);
 
-        $yOffset = 40;
-        $texts   = [
-            [
-                __('Bugun'),
-                36,
-                530,
-                'EA6927',
-                $quicksandBold
-            ],
-            [
-                Yii::$app->formatter->asInteger($summ),
-                46,
-                600,
-                '85B835',
-                $poppins
-            ],
-            [
-                __('so\'m xayriya qilindi'),
-                36,
-                670,
-                'EA6927',
-                $quicksandBold
-            ],
-            [
-                __('{date}, {count} ta ishtirokchi', [
-                    'count' => $count,
-                    'date'  => mb_strtolower(Yii::$app->formatter->asDate(time(), 'php:d-F')),
-                ]),
-                18,
-                740,
-                '888888',
-                $quicksand
-            ]
-        ];
-        foreach ($texts as $item) {
-            list($left, $bottom, $right, , , $top) = imageftbbox($item[1], 0, $quicksand, $item[0]);
-            $font = Image::getImagine()->font($item[4], $item[1], new Color($item[3]));
-            $x    = $centerX - ($right - $left) / 2;
-            $image->draw()->text($item[0], $font, new Point($x, $yOffset + $item[2]));
-        }
+            $yOffset = 40;
+            $texts   = [
+                [
+                    __('Bugun'),
+                    36,
+                    530,
+                    '555555',
+                    $quicksandBold
+                ],
+                [
+                    Yii::$app->formatter->asInteger($summ),
+                    62,
+                    590,
+                    '85B835',
+                    $poppins
+                ],
+                [
+                    __('so\'m xayriya qilindi'),
+                    36,
+                    670,
+                    '555555',
+                    $quicksandBold
+                ],
+                [
+                    __('{date},  {count} ta ishtirokchi', [
+                        'count' => $count,
+                        'date'  => mb_strtolower(Yii::$app->formatter->asDate(time(), 'php:j-F')),
+                    ]),
+                    16,
+                    730,
+                    '555555',
+                    $quicksandBold
+                ]
+            ];
+            foreach ($texts as $item) {
+                list($left, $bottom, $right, , , $top) = imageftbbox($item[1], 0, $quicksand, $item[0]);
+                $font = Image::getImagine()->font($item[4], $item[1], new Color($item[3]));
+                $x    = $centerX - ($right - $left) / 2;
+                $image->draw()->text($item[0], $font, new Point($x, $yOffset + $item[2]));
+            }
 
 
-        $dir  = Yii::getAlias('@static/uploads');
-        $time = 1;
-        time();
+            $imgFile  = Yii::getAlias('@static/uploads/donate.jpg');
+            $time = time();
 
-        $image->save($dir . "/donate_{$time}.jpg");
-        return;
-        $bot   = new BotApi(getenv('BOT_TOKEN'));
-        $chats = Config::getAsArray(Config::TELEGRAM_CHATS, []);
-        $file  = false;
-        try {
-            $file = $this->actionGenerateFile();
-        } catch (\Exception $e) {
-            echo $e->getMessage();
-        }
-        foreach ($chats as $item) {
+            $image->save($imgFile);
+
+            $bot   = new BotApi(getenv('BOT_TOKEN'));
+            $chats = Config::getAsArray(Config::TELEGRAM_CHATS, []);
+            $file  = false;
+
             try {
-                $bot->sendPhoto($item, Yii::getAlias("@staticUrl/uploads/donate_{$time}.jpg?t={$time}"));
+                $file = $this->actionGenerateFile();
+            } catch (\Exception $e) {
+                echo $e->getMessage();
+            }
 
-                if ($file) {
-                    $bot->sendDocument($item, new \CURLFile($file), 'To‘lovlar');
+            foreach ($chats as $item) {
+                try {
+                    $bot->sendPhoto($item, new \CURLFile($imgFile));
+
+                    if ($file) {
+                        $bot->sendDocument($item, new \CURLFile($file), 'To‘lovlar');
+                    }
+                } catch (Exception $exception) {
+                    echo $exception->getMessage() . ' ' . $item . ' code ' . $exception->getCode() . PHP_EOL;
                 }
-            } catch (Exception $exception) {
-                echo $exception->getMessage() . ' ' . $item . ' code ' . $exception->getCode() . PHP_EOL;
             }
         }
     }
@@ -126,10 +130,10 @@ class IndexerController extends Controller
                                         'cssFile'     => '@frontend/assets/app/css/pdf.css',
                                         'options'     => [
                                             'title'   => 'To‘lov tarixi',
-                                            'subject' => "Mehrli qo‘llar uchun $date ga qadar kunlik o‘tkazilgan summalar",
+                                            'subject' => "Mehrli insonlar fondi uchun $date ga qadar kunlik o‘tkazilgan summalar",
                                         ],
                                         'methods'     => [
-                                            'SetHeader' => ['Mehrli qo‘llar ||Sana: ' . $date],
+                                            'SetHeader' => ['Mehrli insonlar ||Sana: ' . $date],
                                             'SetFooter' => ['|{PAGENO}-sahifa|'],
                                         ],
                                     ]);

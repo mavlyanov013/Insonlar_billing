@@ -33,4 +33,5 @@ $sum      = 0;
 <p>
     <?= $date ?> ga qadar kunlik jami tushum: <b><?= Yii::$app->formatter->asCurrency($sum) ?></b>
 </p>
-<p>Saxovat Qo'qon guruhiga a'zo bo'ling: <a href="https://t.me/saxovatguruhi">@saxovatguruhi</a></p>
+<p>"Muhtoj Bolajon" guruhiga a'zo bo'ling: <a href="https://t.me/mehrli_bolajon">@mehrli_bolajon</a></p>
+<p>"Mehrli Insonlar" guruhiga a'zo bo'ling: <a href="https://t.me/mehrli_bolajon">@mehrli_bolajon</a></p>
