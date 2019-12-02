@@ -25,39 +25,63 @@ class IndexerController extends Controller
     public function actionTelegram($test = 0)
     {
         Yii::$app->language = 'uz-UZ';
-        $text               = Yii::$app->formatter->asInteger(Payment::getTodayPaymentAmount());
+        $summ               = Payment::getTodayPaymentAmount();
+        $count              = Payment::getTodayPaymentCount();
 
-        $quicksand = Yii::getAlias('@frontend/assets/vendor/fonts/Quicksand-Regular.otf');
-        $image     = imagecreatefromjpeg(Yii::getAlias('@frontend/assets/app/images/stat.jpg'));
-        $width     = imagesx($image);
-        $height    = imagesy($image);
-        $centerX   = $width / 2;
-        $centerY   = $height / 2;
+        $quicksand     = Yii::getAlias('@frontend/assets/vendor/fonts/Quicksand-Regular.otf');
+        $quicksandBold = Yii::getAlias('@frontend/assets/vendor/fonts/Quicksand-Bold.otf');
+        $poppins       = Yii::getAlias('@frontend/assets/vendor/fonts/Poppins-Bold.ttf');
+        $imageFile     = Yii::getAlias('@frontend/assets/app/images/stat.jpg');
 
-        list($left, $bottom, $right, , , $top) = imageftbbox(40, 0, Yii::getAlias('@frontend/assets/vendor/fonts/Poppins-Bold.ttf'), $text);
-        $left_offset = ($right - $left) / 2;
-        $top_offset  = ($bottom - $top) / 2;
-        $x           = $centerX - $left_offset;
+        $image   = imagecreatefromjpeg($imageFile);
+        $width   = imagesx($image);
+        $height  = imagesy($image);
+        $centerX = $width / 2;
 
-        $y     = $centerY - $top_offset;
-        $image = Image::text(
-            Yii::getAlias('@frontend/assets/app/images/stat.jpg'),
-            $text, '@frontend/assets/vendor/fonts/Poppins-Bold.ttf',
-            [$x, YII_ENV_DEV ? 185 : 185],
-            ['color' => '81256f', 'size' => 40]
-        );
+        $image = Image::getImagine()->open($imageFile);
 
-        $bottomText = __('{date}, {count} ta ishtirokchi', [
-            'count' => Payment::getTodayPaymentCount(),
-            'date'  => mb_strtolower(Yii::$app->formatter->asDate(time(), 'php:d-F')),
-        ]);
+        $yOffset = 40;
+        $texts   = [
+            [
+                __('Bugun'),
+                36,
+                530,
+                'EA6927',
+                $quicksandBold
+            ],
+            [
+                Yii::$app->formatter->asInteger($summ),
+                46,
+                600,
+                '85B835',
+                $poppins
+            ],
+            [
+                __('so\'m xayriya qilindi'),
+                36,
+                670,
+                'EA6927',
+                $quicksandBold
+            ],
+            [
+                __('{date}, {count} ta ishtirokchi', [
+                    'count' => $count,
+                    'date'  => mb_strtolower(Yii::$app->formatter->asDate(time(), 'php:d-F')),
+                ]),
+                18,
+                740,
+                '888888',
+                $quicksand
+            ]
+        ];
+        foreach ($texts as $item) {
+            list($left, $bottom, $right, , , $top) = imageftbbox($item[1], 0, $quicksand, $item[0]);
+            $font = Image::getImagine()->font($item[4], $item[1], new Color($item[3]));
+            $x    = $centerX - ($right - $left) / 2;
+            $image->draw()->text($item[0], $font, new Point($x, $yOffset + $item[2]));
+        }
 
 
-        list($left, $bottom, $right, , , $top) = imageftbbox(20, 0, $quicksand, $bottomText);
-        $font = Image::getImagine()->font($quicksand, 20, new Color('888888'));
-        $x = $centerX - ($right - $left) / 2;
-
-        $image->draw()->text($bottomText, $font, new Point($x, 750));
         $dir  = Yii::getAlias('@static/uploads');
         $time = 1;
         time();
