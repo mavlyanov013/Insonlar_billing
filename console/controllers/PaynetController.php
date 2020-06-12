@@ -22,8 +22,8 @@ use yii\console\Controller;
 class PaynetController extends Controller
 {
     protected $params = [
-        'username'  => 'saxovat',
-        'password'  => 'saxovat',
+        'username'  => 'insonlar',
+        'password'  => 'insonlar@2020',
         'serviceId' => 1,
     ];
 
@@ -44,7 +44,7 @@ class PaynetController extends Controller
             'encoding'           => 'UTF-8',
             'soap_version'       => SOAP_1_2,
         );
-        $this->client = new SoapClient('http://api.mehrli.uz/ProviderWebService.wsdl', $options);
+        $this->client = new SoapClient('http://insonlar.mehrli.uz/ProviderWebService.wsdl', $options);
 
         parent::init();
     }
