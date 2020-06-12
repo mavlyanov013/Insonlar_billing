@@ -14,7 +14,7 @@ if [ -f $OUTPUT ]; then
 fi
 
 THE_DATE=$(date +"%d-%m-%Y_%H_%M")
-/usr/bin/mongodump --db=qoqon --out=./
+/usr/bin/mongodump --db=inson --out=./
 tar -czvf mongo_inson_${THE_DATE}.bak.tgz ./inson/
 rm -rf ./inson
 find /var/www/insonlar/backups/mongo_*.bak.* -mtime +15 -exec rm {} \;
