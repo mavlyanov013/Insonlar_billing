@@ -27,5 +27,19 @@ return [
                 'return_url'  => AGR_LIVE ? 'http://www.qurbonlik.uz/order/success' : 'http://www.qurbonlik.uz/order/success',
             ],
         ],
+        'paynet'  => [
+            'class'    => Paynet::className(),
+            'enabled'  => true,
+            'liveMode' => PAYNET_LIVE,
+            'config'   => [
+                'minAmount'       => 500,
+                'maxAmount'       => 100000000,
+                'allowedIps'      => ["213.230.106.112/28", "213.230.65.80/28", "80.80.218.158"],
+                'serviceLocation' => 'https://api.saxovat.uz/v1/paynet',
+                'wsdlLocation'    => 'https://api.saxovat.uz/v1/paynet/wsdl',
+                'xsdLocation'     => 'https://api.saxovat.uz/v1/paynet/xsd',
+            ],
+        ],
+
     ],
 ];
