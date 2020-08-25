@@ -88,7 +88,7 @@ class IndexerController extends Controller
             $time = time();
 
             $image->save($imgFile);
-return;
+
             $bot   = new BotApi(getenv('BOT_TOKEN'));
             $chats = Config::getAsArray(Config::TELEGRAM_CHATS, []);
             $file  = false;
