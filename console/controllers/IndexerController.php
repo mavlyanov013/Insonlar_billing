@@ -33,7 +33,7 @@ class IndexerController extends Controller
             $quicksand     = Yii::getAlias('@frontend/assets/vendor/fonts/Quicksand-Regular.otf');
             $quicksandBold = Yii::getAlias('@frontend/assets/vendor/fonts/Quicksand-Bold.otf');
             $poppins       = Yii::getAlias('@frontend/assets/vendor/fonts/Poppins-Bold.ttf');
-            $imageFile     = Yii::getAlias('@frontend/assets/app/images/stat.jpg');
+            $imageFile     = Yii::getAlias('@frontend/assets/app/images/stat_1.jpg');
 
             $image   = imagecreatefromjpeg($imageFile);
             $width   = imagesx($image);
@@ -42,7 +42,7 @@ class IndexerController extends Controller
 
             $image = Image::getImagine()->open($imageFile);
 
-            $yOffset = 40;
+            $yOffset = -150;
             $texts   = [
                 [
                     __('Bugun'),
@@ -54,8 +54,8 @@ class IndexerController extends Controller
                 [
                     Yii::$app->formatter->asInteger($summ),
                     62,
-                    590,
-                    '85B835',
+                    580,
+                    '187DB1',
                     $poppins
                 ],
                 [
@@ -71,7 +71,7 @@ class IndexerController extends Controller
                         'date'  => mb_strtolower(Yii::$app->formatter->asDate(time(), 'php:j-F')),
                     ]),
                     16,
-                    730,
+                    920,
                     '555555',
                     $quicksandBold
                 ]
@@ -88,7 +88,7 @@ class IndexerController extends Controller
             $time = time();
 
             $image->save($imgFile);
-
+return;
             $bot   = new BotApi(getenv('BOT_TOKEN'));
             $chats = Config::getAsArray(Config::TELEGRAM_CHATS, []);
             $file  = false;
