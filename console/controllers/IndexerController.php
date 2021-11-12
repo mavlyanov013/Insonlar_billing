@@ -104,7 +104,7 @@ class IndexerController extends Controller
                     $bot->sendPhoto($item, new \CURLFile($imgFile));
 
                     if ($file) {
-                        $bot->sendDocument($item, new \CURLFile($file), 'To‘lovlar');
+                        $bot->sendDocument($item, new \CURLFile($file), "To‘lovlar");
                     }
                 } catch (Exception $exception) {
                     echo $exception->getMessage() . ' ' . $item . ' code ' . $exception->getCode() . PHP_EOL;

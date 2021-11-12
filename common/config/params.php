@@ -14,6 +14,20 @@ return [
     'user.passwordResetTokenExpire'  => 3600,
     'admin.passwordResetTokenExpire' => 3600,
     'payment'                        => [
+        'upay'    => [
+            'class'    => \common\models\payment\methods\Upay::className(),
+            'enabled'  => true,
+            'liveMode' => UPAY_LIVE,
+            'config'   => [
+                'minAmount'   => 500,
+                'maxAmount'   => 100000000,
+                'apiVersion'  => 1,
+                'serviceId'   => 372,
+                'allowedIps'  => ["91.212.89.86"],
+                'api_key'     => UPAY_LIVE ? 'Lz3eMzChgRurJx8e9sQGGzKQPxniAfYj' : 'CrjRsu1ytedVb2Xu50PmtKS4ABZGqFEN',
+                'payment_url' => UPAY_LIVE ? 'https://pay.smst.uz/prePay.do' : 'https://pay.smst.uz/prePay.do',
+            ],
+        ],
         'agr'     => [
             'class'    => Agr::className(),
             'enabled'  => true,

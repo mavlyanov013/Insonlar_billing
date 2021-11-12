@@ -14,4 +14,5 @@ defined('KAPITAL_LIVE') or define('KAPITAL_LIVE', getenv('KAPITAL_LIVE') == 'tru
 defined('CLICK_LIVE') or define('CLICK_LIVE', getenv('CLICK_LIVE') == 'true');
 defined('PAYMO_LIVE') or define('PAYMO_LIVE', getenv('PAYMO_LIVE') == 'true');
 defined('AGR_LIVE') or define('AGR_LIVE', getenv('AGR_LIVE') == 'true');
+defined('UPAY_LIVE') or define('UPAY_LIVE', getenv('UPAY_LIVE') == 'true');
 defined('ASSET_BUNDLE') or define('ASSET_BUNDLE', getenv('ASSET_BUNDLE') == 'true');
