@@ -37,9 +37,7 @@ class UpayController extends Controller
 
         $data['accessToken'] = md5(
             $data['upayTransId'] .
-            $data['upayPaymentAmount'] .
-            $data['upayTransTime'] .
-            $method->getServiceId()
+            $data['upayPaymentAmount']
         );
 
         if ($result = $this->request($data, $live)) {

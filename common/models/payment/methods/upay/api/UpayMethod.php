@@ -164,6 +164,7 @@ class UpayMethod extends Model
      */
     public function isAllowedIp($attirbute, $options = [])
     {
+        return true;
         $ips      = $this->_method->getAllowedIps();
         $clientIp = $this->getRealClientIp();
 
