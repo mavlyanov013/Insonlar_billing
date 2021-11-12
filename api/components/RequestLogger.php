@@ -106,22 +106,13 @@ class RequestLogger
             }
 
             $response->statusCode = 200;
-        } elseif ($controller == 'v1/agr') {
+        } elseif ($controller == 'v1/upay') {
             Yii::$app->response->format = Response::FORMAT_JSON;
             $data                       = [
                 'inp' => Yii::$app->request->getRawBody(),
                 'out' => $response->data,
             ];
-            Yii::trace(print_r($data, true), 'agr_trace');
-
-            if ($response->getStatusCode() != 200) {
-                $response->setStatusCode(200);
-                $response->data = [
-                    'ERROR'      => -8,
-                    'ERROR_NOTE' => 'Error in request',
-                ];
-            }
-
+            Yii::error(print_r($data, true), 'application');
         }
     }
 }
