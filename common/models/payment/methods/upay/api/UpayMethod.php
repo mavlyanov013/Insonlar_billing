@@ -33,7 +33,7 @@ class UpayMethod extends Model
     public function rules()
     {
         return [
-            [['personalAccount', 'upayTransId', 'upayTransTime', 'upayPaymentAmount'], 'required'],
+            [['personalAccount', 'upayTransId', 'upayPaymentAmount'], 'required'],
             [['upayPaymentAmount'], 'number', 'integerOnly' => true, 'min' => 500],
             [['accessToken'], 'validSignature'],
             [['accessToken'], 'isAllowedIp'],
@@ -51,9 +51,7 @@ class UpayMethod extends Model
         //accessToken = md {upayTransId + upayPaymentAmount + upayPaymentAmount + serviceId}
         $sign = md5(
             $this->upayTransId .
-            $this->upayPaymentAmount .
-            $this->upayTransTime .
-            $this->_method->getServiceId()
+            $this->upayPaymentAmount
         );
 
         if ($sign != $this->accessToken) {
