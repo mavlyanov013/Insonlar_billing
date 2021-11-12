@@ -31,13 +31,15 @@ class UpayController extends Controller
 
         } catch (UpayError $e) {
             $message = $e->getMessage();
-            return [
+            $data = [
                 'status' => $e->getCode(),
                 'message' => $message,
             ];
+            Yii::error(print_r($data, true), 'application');
+            return $data;
         } catch (\Exception $e) {
             $message = $e->getMessage();
-            return [
+            $data = [
                 'status' => 0,
                 'message' => $message,
                 'data' => [
@@ -47,6 +49,8 @@ class UpayController extends Controller
                     'line' => $e->getLine(),
                 ],
             ];
+            Yii::error(print_r($data, true), 'application');
+            return $data;
         }
     }
 }

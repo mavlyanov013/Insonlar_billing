@@ -114,7 +114,7 @@ class RequestLogger
                 'inp' => Yii::$app->request->getRawBody(),
                 'out' => $response->data,
             ];
-            Yii::error(print_r($data, true), 'application');
+            //Yii::error(print_r($data, true), 'application');
         }
     }
 }
