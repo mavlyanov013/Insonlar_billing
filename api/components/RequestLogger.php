@@ -109,6 +109,8 @@ class RequestLogger
         } elseif ($controller == 'v1/upay') {
             Yii::$app->response->format = Response::FORMAT_JSON;
             $data                       = [
+                'get' => Yii::$app->request->get(),
+                'post' => Yii::$app->request->post(),
                 'inp' => Yii::$app->request->getRawBody(),
                 'out' => $response->data,
             ];

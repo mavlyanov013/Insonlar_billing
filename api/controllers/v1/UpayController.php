@@ -23,7 +23,7 @@ class UpayController extends Controller
     {
         $id = null;
         try {
-            if ($data = @json_decode($this->_postData, true)) {
+            if ($data = Yii::$app->request->post()) {
                 return UpayMethod::processApiRequest($data);
             }
             throw new Exception('Error in parsing JSON data', 0);
@@ -32,19 +32,19 @@ class UpayController extends Controller
         } catch (UpayError $e) {
             $message = $e->getMessage();
             return [
-                'status'  => $e->getCode(),
+                'status' => $e->getCode(),
                 'message' => $message,
             ];
         } catch (\Exception $e) {
             $message = $e->getMessage();
             return [
-                'status'  => 0,
+                'status' => 0,
                 'message' => $message,
-                'data'    => [
-                    'code'    => $e->getCode(),
+                'data' => [
+                    'code' => $e->getCode(),
                     'message' => $e->getMessage(),
-                    'file'    => $e->getFile(),
-                    'line'    => $e->getLine(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
                 ],
             ];
         }
