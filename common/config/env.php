@@ -10,6 +10,7 @@ defined('YII_DEBUG') or define('YII_DEBUG', getenv('YII_DEBUG') === 'true' || is
 defined('YII_ENV') or define('YII_ENV', getenv('YII_ENV') ?: 'prod');
 defined('PAYCOM_LIVE') or define('PAYCOM_LIVE', getenv('PAYCOM_LIVE') == 'true');
 defined('PAYNET_LIVE') or define('PAYNET_LIVE', getenv('PAYNET_LIVE') == 'true');
+defined('APELSIN_LIVE') or define('APELSIN_LIVE', getenv('APELSIN_LIVE') == 'true');
 defined('KAPITAL_LIVE') or define('KAPITAL_LIVE', getenv('KAPITAL_LIVE') == 'true');
 defined('CLICK_LIVE') or define('CLICK_LIVE', getenv('CLICK_LIVE') == 'true');
 defined('PAYMO_LIVE') or define('PAYMO_LIVE', getenv('PAYMO_LIVE') == 'true');

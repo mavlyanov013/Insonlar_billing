@@ -3,6 +3,7 @@
 namespace common\models\payment\methods\paynet;
 
 use common\models\payment\Method;
+use common\models\payment\methods\Apelsin;
 use common\models\payment\methods\Paynet;
 use common\models\payment\methods\paynet\types\CancelTransactionArguments;
 use common\models\payment\methods\paynet\types\CancelTransactionResult;
@@ -66,7 +67,7 @@ class PaynetMethod
     public function __construct($methodCode, $version = 0)
     {
         /**
-         * @var $paymentMethod Paynet
+         * @var $paymentMethod Paynet | Apelsin
          */
         $paymentMethod       = Payment::getMethodInstance($methodCode);
         $this->allowedIps    = $paymentMethod->getAllowedIps();

@@ -64,7 +64,8 @@
         "wbraganca/yii2-fancytree-widget": "^1.0",
         "phpoffice/phpspreadsheet": "^1.3",
         "telegram-bot/api": "^2.3",
-        "longman/telegram-bot": "^0.53.0"
+        "longman/telegram-bot": "^0.53.0",
+      "ext-soap": "*"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.0.0",

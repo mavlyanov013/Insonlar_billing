@@ -14,7 +14,8 @@ class UpayController extends Controller
 
     public function beforeAction($action)
     {
-        $this->_postData = Yii::$app->request->getRawBody();
+        $this->_postData = @json_decode(Yii::$app->request->getRawBody(), true);
+        Yii::error(Yii::$app->request->getRawBody());
 
         return parent::beforeAction($action);
     }
@@ -23,7 +24,7 @@ class UpayController extends Controller
     {
         $id = null;
         try {
-            if ($data = Yii::$app->request->post()) {
+            if ($data = $this->_postData) {
                 return UpayMethod::processApiRequest($data);
             }
             throw new Exception('Error in parsing JSON data', 0);
