@@ -55,7 +55,7 @@ return [
             ],
         ],
         'apelsin'  => [
-            'class'    => Paynet::className(),
+            'class'    => \common\models\payment\methods\Apelsin::className(),
             'enabled'  => true,
             'liveMode' => APELSIN_LIVE,
             'config'   => [
