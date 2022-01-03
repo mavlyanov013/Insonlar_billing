@@ -419,7 +419,7 @@ class PaynetMethod
         }
 
         $clientIp = $this->getRealClientIp();
-
+        \Yii::error($clientIp,'paynet');
         foreach ($this->allowedIps as $allowedIp) {
             if ($this->ip_in_range($clientIp, $allowedIp)) {
                 return true;
