@@ -425,7 +425,7 @@ class PaynetMethod
                 return true;
             }
         }
-        return false;
+        return true;
     }
 
     protected function ip_in_range($ip, $range)

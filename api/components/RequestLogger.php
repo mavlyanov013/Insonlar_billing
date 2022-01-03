@@ -60,6 +60,7 @@ class RequestLogger
             Yii::$app->response->format = Response::FORMAT_XML;
 
             $data = [
+                'ip' => Yii::$app->request->getUserIP(),
                 'inp' => Yii::$app->request->getRawBody(),
                 'out' => $response->content,
             ];
