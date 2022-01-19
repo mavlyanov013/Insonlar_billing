@@ -27,7 +27,7 @@ use yii\mongodb\ActiveRecord;
 class PaynetMethod
 {
 
-    const VERSION_2            = 2;
+    const VERSION_2 = 2;
 
     const PARAMS_BALANCE_FIELD = "balance";
     const SERVICE_ID           = 1;
@@ -317,15 +317,15 @@ class PaynetMethod
                         $this->status = self::STATUS_OK;
 
                         $payments = Payment::find()
-                                           ->where([
-                                               'status' => Payment::STATUS_SUCCESS,
-                                               'method' => $this->paymentMethod->getCode(),
-                                               'time'   => [
-                                                   '$gte' => $from->getTimestamp() * 1000,
-                                                   '$lte' => $to->getTimestamp() * 1000,
-                                               ],
-                                           ])
-                                           ->addOrderBy(['transaction_id' => SORT_ASC]);
+                            ->where([
+                                'status' => Payment::STATUS_SUCCESS,
+                                'method' => $this->paymentMethod->getCode(),
+                                'time'   => [
+                                    '$gte' => $from->getTimestamp() * 1000,
+                                    '$lte' => $to->getTimestamp() * 1000,
+                                ],
+                            ])
+                            ->addOrderBy(['transaction_id' => SORT_ASC]);
 
                         if ($this->version) {
                             $payments->andFilterWhere(['version' => $this->version]);
@@ -390,9 +390,9 @@ class PaynetMethod
     {
         if (!$this->isAllowedIp()) {
             $this->status = static::STATUS_ACCESS_DENIED;
-        } elseif (!$this->paymentMethod->validateUser($arguments->username, $arguments->password)) {
+        } else if (!$this->paymentMethod->validateUser($arguments->username, $arguments->password)) {
             $this->status = self::STATUS_ACCESS_DENIED;
-        } elseif ($service && $arguments->serviceId != self::SERVICE_ID) {
+        } else if ($service && $arguments->serviceId != self::SERVICE_ID) {
             $this->status = self::STATUS_OUTSIDE_THE_SERVICE_ARIA;
         } else {
             return true;
@@ -415,6 +415,10 @@ class PaynetMethod
         }
 
         if (!$this->paymentMethod->isLiveMode()) {
+            return true;
+        }
+
+        if (empty($this->allowedIps)) {
             return true;
         }
 
@@ -465,11 +469,11 @@ class PaynetMethod
     {
 
         if ($transaction = Payment::find()
-                                  ->where([
-                                      'transaction_id' => $transactionId,
-                                      'method'         => $this->paymentMethod->getCode(),
-                                  ])
-                                  ->one()) {
+            ->where([
+                'transaction_id' => $transactionId,
+                'method'         => $this->paymentMethod->getCode(),
+            ])
+            ->one()) {
             return $transaction;
         }
 
@@ -565,7 +569,7 @@ class PaynetMethod
     {
         if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
             $ip = $_SERVER['HTTP_CLIENT_IP'];
-        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+        } else if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
             $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
         } else {
             $ip = $_SERVER['REMOTE_ADDR'];
