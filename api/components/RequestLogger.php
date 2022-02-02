@@ -60,7 +60,7 @@ class RequestLogger
             Yii::$app->response->format = Response::FORMAT_XML;
 
             $data = [
-                'ip' => Yii::$app->request->getUserIP(),
+                'ip'  => Yii::$app->request->getUserIP(),
                 'inp' => Yii::$app->request->getRawBody(),
                 'out' => $response->content,
             ];
@@ -70,6 +70,21 @@ class RequestLogger
             if ($response->statusCode != 200) {
                 Yii::error(print_r($data, true), 'paynet');
             }
+        } else if ($controller == 'v1/apelsin') {
+            Yii::$app->response->format = Response::FORMAT_XML;
+
+            $data = [
+                'ip'  => Yii::$app->request->getUserIP(),
+                'inp' => Yii::$app->request->getRawBody(),
+                'out' => $response->content,
+            ];
+
+            Yii::trace(print_r($data, true), 'apelsin');
+
+            if ($response->statusCode != 200) {
+                Yii::error(print_r($data, true), 'apelsin');
+            }
+
         } else if ($controller == 'v1/kapital') {
             Yii::$app->response->format = Response::FORMAT_XML;
 
@@ -83,7 +98,7 @@ class RequestLogger
             if ($response->statusCode != 200) {
                 Yii::error(print_r($data, true), 'kapital');
             }
-        } elseif ($controller == 'v1/click') {
+        } else if ($controller == 'v1/click') {
 
             Yii::$app->response->format = Response::FORMAT_JSON;
             $data                       = [
@@ -91,7 +106,7 @@ class RequestLogger
                 'out' => $response->data,
             ];
             Yii::trace(print_r($data, true), 'click');
-        } elseif ($controller == 'v1/paymo') {
+        } else if ($controller == 'v1/paymo') {
 
             Yii::$app->response->format = Response::FORMAT_JSON;
             $data                       = [
@@ -107,13 +122,13 @@ class RequestLogger
             }
 
             $response->statusCode = 200;
-        } elseif ($controller == 'v1/upay') {
+        } else if ($controller == 'v1/upay') {
             Yii::$app->response->format = Response::FORMAT_JSON;
             $data                       = [
-                'get' => Yii::$app->request->get(),
+                'get'  => Yii::$app->request->get(),
                 'post' => Yii::$app->request->post(),
-                'inp' => Yii::$app->request->getRawBody(),
-                'out' => $response->data,
+                'inp'  => Yii::$app->request->getRawBody(),
+                'out'  => $response->data,
             ];
             //Yii::error(print_r($data, true), 'application');
         }
