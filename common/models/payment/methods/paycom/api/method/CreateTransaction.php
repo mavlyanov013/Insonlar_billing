@@ -70,7 +70,7 @@ class CreateTransaction extends PaycomMethod
             $transaction->status         = Payment::STATUS_PENDING;
             $transaction->method         = $this->_method->getCode();
             $transaction->transaction_id = $this->id;
-            $transaction->amount         = $this->amount / 100;
+            $transaction->amount         = intval($this->amount / 100);
             $transaction->user_data      = $this->account['user_data'];
 
             $transaction->addAllInformation([

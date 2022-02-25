@@ -54,14 +54,14 @@ return [
                 'xsdLocation'     => 'https://api.saxovat.uz/v1/paynet/xsd',
             ],
         ],
-        'apelsin'  => [
-            'class'    => \common\models\payment\methods\Apelsin::className(),
-            'enabled'  => true,
-            'liveMode' => APELSIN_LIVE,
-            'config'   => [
-                'minAmount'       => 500,
-                'maxAmount'       => 100000000,
-                'allowedIps'      => [],
+        'apelsin' => [
+            'class'      => \common\models\payment\methods\Apelsin::className(),
+            'enabled'    => true,
+            'liveMode'   => APELSIN_LIVE,
+            'config'     => [
+                'minAmount'  => 500,
+                'maxAmount'  => 100000000,
+                'allowedIps' => [],
             ],
         ],
     ],

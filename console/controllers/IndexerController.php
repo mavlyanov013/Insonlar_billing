@@ -90,6 +90,7 @@ class IndexerController extends Controller
             $image->save($imgFile);
 
             $bot   = new BotApi(getenv('BOT_TOKEN'));
+            $bot->setCurlOption(CURLOPT_TIMEOUT, 40);
             $chats = Config::getAsArray(Config::TELEGRAM_CHATS, []);
             $file  = false;
 
