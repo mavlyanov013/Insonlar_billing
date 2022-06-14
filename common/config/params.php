@@ -48,17 +48,17 @@ return [
             'config'   => [
                 'minAmount'       => 500,
                 'maxAmount'       => 100000000,
-                'allowedIps'      => ["213.230.106.112/28", "213.230.65.80/28", "80.80.218.158"],
+                'allowedIps'      => ["213.230.106.112/28", "213.230.65.80/28", "91.196.76.51"],
                 'serviceLocation' => 'https://api.saxovat.uz/v1/paynet',
                 'wsdlLocation'    => 'https://api.saxovat.uz/v1/paynet/wsdl',
                 'xsdLocation'     => 'https://api.saxovat.uz/v1/paynet/xsd',
             ],
         ],
         'apelsin' => [
-            'class'      => \common\models\payment\methods\Apelsin::className(),
-            'enabled'    => true,
-            'liveMode'   => APELSIN_LIVE,
-            'config'     => [
+            'class'    => \common\models\payment\methods\Apelsin::className(),
+            'enabled'  => true,
+            'liveMode' => APELSIN_LIVE,
+            'config'   => [
                 'minAmount'  => 500,
                 'maxAmount'  => 100000000,
                 'allowedIps' => [],
