@@ -23,7 +23,7 @@ return [
                 'maxAmount'   => 100000000,
                 'apiVersion'  => 1,
                 'serviceId'   => 372,
-                'allowedIps'  => ["91.212.89.86"],
+                'allowedIps'  => ["91.212.89.86","84.54.115.115"],
                 'api_key'     => UPAY_LIVE ? 'Lz3eMzChgRurJx8e9sQGGzKQPxniAfYj' : 'CrjRsu1ytedVb2Xu50PmtKS4ABZGqFEN',
                 'payment_url' => UPAY_LIVE ? 'https://pay.smst.uz/prePay.do' : 'https://pay.smst.uz/prePay.do',
             ],
