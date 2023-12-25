@@ -5,10 +5,12 @@ namespace common\models\payment;
 use common\models\Admin;
 use common\models\Counters;
 use common\models\payment\methods\Cash;
+use common\models\payment\methods\Click;
 use common\models\payment\methods\paycom\api\PaycomMethod;
 use DateTime;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\Timestamp;
+use MongoDB\BSON\UTCDateTime;
 use Yii;
 use yii\base\Exception;
 use yii\behaviors\TimestampBehavior;
@@ -20,32 +22,32 @@ use yii\web\Application;
 /**
  * This is the model class for table "payment".
  *
- * @property integer   $_id
- * @property integer   $local_id
- * @property string    $increment_id
- * @property string    $transaction_id
- * @property string    $category
- * @property string    $environment
- * @property string    $method
- * @property string    $agr_method
- * @property string    $status
- * @property string    $user_data
- * @property boolean   $live_mode
- * @property int       $_user
- * @property int       $time
- * @property int       $version
- * @property string    $transactionTime
- * @property int       $create_time
- * @property int       $perform_time
- * @property int       $cancel_time
- * @property int       $click_paydoc_id
- * @property float     $amount
- * @property float     $refunded
- * @property string    $information
+ * @property integer $_id
+ * @property integer $local_id
+ * @property string $increment_id
+ * @property string $transaction_id
+ * @property string $category
+ * @property string $method
+ * @property string $status
+ * @property string $user_data
+ * @property boolean $live_mode
+ * @property int $_user
+ * @property int $time
+ * @property int $version
+ * @property string $transactionTime
+ * @property int $create_time
+ * @property int $perform_time
+ * @property int $cancel_time
+ * @property int $click_paydoc_id
+ * @property int $click_service_id
+ * @property float $amount
+ * @property float $amount_usd
+ * @property float $refunded
+ * @property string $information
  * @property Timestamp $created_at
  * @property Timestamp $updated_at
- * @property string    $receivers
- * @property Admin     $admin
+ * @property string $receivers
+ * @property Admin $admin
  */
 class Payment extends ActiveRecord
 {
@@ -99,9 +101,11 @@ class Payment extends ActiveRecord
             'category',
             'transaction_id',
             'click_paydoc_id',
+            'click_service_id',
             'method',
             'status',
             'amount',
+            'amount_usd',
             'refunded',
             'transactionTime',
             'time',
@@ -113,8 +117,6 @@ class Payment extends ActiveRecord
             'created_at',
             'updated_at',
             'live_mode',
-            'environment',
-            'agr_method',
             'details',
             'version',
             'image',
@@ -178,17 +180,24 @@ class Payment extends ActiveRecord
     public function rules()
     {
         return [
-            [['method', 'status', 'amount', 'transaction_id'], 'required', 'on' => [self::SCENARIO_INSERT]],
+            [['method', 'status', 'transaction_id'], 'required', 'on' => [self::SCENARIO_INSERT]],
+
+            [['amount'], 'validateAmount'],
 
             [['status', 'amount', 'user_data'], 'required', 'on' => [self::SCENARIO_CASH]],
             [['details', 'time', 'image'], 'safe', 'on' => [self::SCENARIO_CASH]],
             [['details'], 'string', 'max' => 2000, 'on' => [self::SCENARIO_CASH]],
 
-            [['information', 'status'], 'safe', 'on' => [self::SCENARIO_INSERT, self::SCENARIO_UPDATE]],
+            [['information', 'status', 'time'], 'safe', 'on' => [self::SCENARIO_INSERT, self::SCENARIO_UPDATE]],
             [['search', 'status', 'method', 'datetime_min', 'datetime_max', 'datetime_range'], 'safe', 'on' => [self::SCENARIO_SEARCH]],
-
-            [['amount'], 'integer', 'min' => 500],
         ];
+    }
+
+    public function validateAmount($attribute)
+    {
+        if ($this->amount == 0 && $this->amount_usd == 0) {
+            $this->addError($attribute, __('Amount or Amount USD required'));
+        }
     }
 
     /**
@@ -232,6 +241,7 @@ class Payment extends ActiveRecord
     public function beforeSave($insert)
     {
         if ($this->method == Cash::METHOD_CODE) {
+
             if ($date = DateTime::createFromFormat('d-m-Y H:i', $this->time)) {
                 $this->time = $date->getTimestamp() * 1000;
             }
@@ -270,7 +280,7 @@ class Payment extends ActiveRecord
             $this->local_id = Counters::getNextSequence(self::collectionName());
         }
 
-        if ($this->isNewRecord && ($this->live_mode === null || $this->live_mode === '')) {
+        if ($this->isNewRecord) {
             $this->live_mode = $this->methodInstance()->liveMode;
         }
 
@@ -429,23 +439,28 @@ class Payment extends ActiveRecord
             // $this->datetime_range = $from->format('d-m-Y H:i') . ' / ' . $to->format('d-m-Y H:i');
         }
 
-        if ($this->method) {
-            $query->orFilterWhere(['method' => $this->method]);
-            $query->orFilterWhere(['agr_method' => $this->method == 'paycom' ? 'payme' : $this->method]);
-        }
 
         if ($this->search) {
-            $query->orFilterWhere(['like', 'user_data', $this->search]);
-            $query->orFilterWhere(['like', 'transaction_id', $this->search]);
+            $method = Payment::getMethodInstance(Click::METHOD_CODE);
 
-            if (intval($this->search)) {
-                $query->orFilterWhere(['$eq', 'amount', intval($this->search)]);
+            if (is_numeric($this->search) && in_array($this->search, $method->getServiceIds())) {
+                $query->orFilterWhere(['click_service_id' => $this->search]);
+            } else {
+                $query->orFilterWhere(['like', 'user_data', $this->search]);
+                $query->orFilterWhere(['like', 'transaction_id', $this->search]);
+
+                if (intval($this->search)) {
+                    $query->orFilterWhere(['$eq', 'amount', intval($this->search)]);
+                }
             }
         }
 
         if ($this->status) {
             $query->andFilterWhere(['status' => $this->status]);
             $limit = 300;
+        }
+        if ($this->method) {
+            $query->andFilterWhere(['method' => $this->method]);
         }
 
 
@@ -580,7 +595,7 @@ class Payment extends ActiveRecord
 
     public function getMethodLabel()
     {
-        return $this->agr_method ? __(ucfirst($this->agr_method))."(P)" : __(ucfirst($this->method));
+        return __(ucfirst($this->method));
     }
 
     public function getPaymentDateFormatted()
@@ -699,6 +714,35 @@ class Payment extends ActiveRecord
             ->sum('amount', self::getConnection()->getDatabase());
 
         return $sum ? $sum : 0;
+    }
+
+    public static function getChartData()
+    {
+        $today = new DateTime('now');
+        $today->setDate(date('Y') - 1, date('m'), date('d'));
+        $data = self::getCollection()->aggregate([
+            [
+                '$match' => [
+                    'time'   => ['$gte' => $today->getTimestamp() * 1000],
+                    'status' => ['$eq' => self::STATUS_SUCCESS]
+                ],
+            ], [
+                '$sort' => ['time' => -1],
+            ], [
+                '$group' => [
+                    '_id'  => [
+                        //'$floor' => ['$divide' => ['$time', 86400 * 1000]]
+                        'year'  => ['$year' => ['date' => '$created_at', 'timezone' => 'Asia/Tashkent']],
+                        'month' => ['$month' => ['date' => '$created_at', 'timezone' => 'Asia/Tashkent']],
+                        'day'   => ['$dayOfMonth' => ['date' => '$created_at', 'timezone' => 'Asia/Tashkent']],
+                    ],
+                    'data' => ['$sum' => '$amount'],
+                ],
+            ],
+        ]);
+        return array_map(function ($item) {
+            return [$item['_id'], $item['data']];
+        }, $data);
     }
 
 }

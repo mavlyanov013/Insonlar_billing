@@ -14,6 +14,21 @@ return [
     'user.passwordResetTokenExpire'  => 3600,
     'admin.passwordResetTokenExpire' => 3600,
     'payment'                        => [
+        'paycom'  => [
+            'class'     => Paycom::className(),
+            'enabled'   => true,
+            'liveMode'  => PAYCOM_LIVE,
+            'merchants' => [
+            ],
+            'config'    => [
+                'minAmount'    => 500,
+                'maxAmount'    => 100000000,
+                'merchant_id'  => '5b31f08cc161ccb940856918',
+                'merchant_key' => PAYCOM_LIVE ? 'CsOJ7?47jhcE%zc?ITeHIjiHpjzXf?y8PFpC' : '?g3SdOZU98xmiX1ks#&4HCDA8TvHuH2sYcMq',
+                'payment_url'  => PAYCOM_LIVE ? 'https://checkout.paycom.uz' : 'https://test.paycom.uz',
+                'return_url'   => 'https://www.mehrli.uz?payme=success',
+            ],
+        ],
         'upay'    => [
             'class'    => \common\models\payment\methods\Upay::className(),
             'enabled'  => true,

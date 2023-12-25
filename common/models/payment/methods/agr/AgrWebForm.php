@@ -47,15 +47,16 @@ class AgrWebForm extends Model
         ];
     }
 
-    public function prepareForm($amount, $name)
+    public function prepareFormWithParams($amount, $name)
     {
         $this->VENDOR_ID         = $this->getMethod()->getVendorId();
-        $this->MERCHANT_TRANS_ID = $name ?: 'Saxovatli inson';
+        $this->MERCHANT_TRANS_ID = $name;
 
         $this->MERCHANT_TRANS_AMOUNT     = intval($amount);
-        $this->MERCHANT_CURRENCY         = 'sum';
+        $this->MERCHANT_CURRENCY         = 'usd';
+        $this->MERCHANT_TRANS_NOTE       = $name;
         $this->SIGN_TIME                 = Payment::getCurrentTimeStamp();
-        $this->MERCHANT_TRANS_RETURN_URL = linkTo(['/', 'success' => md5(Yii::$app->session->id)], true);
+        $this->MERCHANT_TRANS_RETURN_URL = linkTo(['/', 'success' => intval($amount)], true);
 
         $this->SIGN_STRING = md5(
             $this->getMethod()->getSecretKey() .

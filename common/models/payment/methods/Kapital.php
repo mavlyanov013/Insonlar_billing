@@ -12,10 +12,10 @@ class Kapital extends Method
 {
 
     const CONFIG_ALLOWED_IPS = 'allowedIps';
-    const CONFIG_USER_NAME = 'kapitalUserName';
-    const CONFIG_PASSWORD = 'kapitalPassword';
-    const CONFIG_MIN_AMOUNT = 'minAmount';
-    const CONFIG_MAX_AMOUNT = 'maxAmount';
+    const CONFIG_USER_NAME   = 'kapitalUserName';
+    const CONFIG_PASSWORD    = 'kapitalPassword';
+    const CONFIG_MIN_AMOUNT  = 'minAmount';
+    const CONFIG_MAX_AMOUNT  = 'maxAmount';
 
 
     const METHOD_CODE = 'kapital';
@@ -59,17 +59,13 @@ class Kapital extends Method
         Config::set(self::CONFIG_USER_NAME, $userName);
 
         if ($password)
-            return $this->setPassword($password);
+             $this->setPassword($password);
 
         return true;
     }
 
     public function validateUser($userName, $password)
     {
-        Yii::error($userName, 'kapital');
-        Yii::error($password, 'kapital');
-        Yii::error($this->getUserName(), 'kapital');
-        Yii::error(Yii::$app->security->validatePassword($password, $this->getPassword()), 'kapital');
         return $userName == $this->getUserName() && Yii::$app->security->validatePassword($password, $this->getPassword());
     }
 

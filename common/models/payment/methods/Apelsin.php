@@ -12,16 +12,14 @@ class Apelsin extends Method
 {
 
     const CONFIG_ALLOWED_IPS = 'allowedIps';
-    const CONFIG_USER_NAME   = 'apelsinUserName';
-    const CONFIG_PASSWORD    = 'apelsinPassword';
+    const CONFIG_USER_NAME   = 'apelsinOrgUserName';
+    const CONFIG_PASSWORD    = 'apelsinOrgPassword';
     const CONFIG_MIN_AMOUNT  = 'minAmount';
     const CONFIG_MAX_AMOUNT  = 'maxAmount';
-
 
     const METHOD_CODE = 'apelsin';
 
     public $name        = 'Apelsin';
-    public $merchants   = [];
     public $description = 'Users can pay using Apelsin payment system';
 
     public function getAllowedIps()
@@ -73,6 +71,4 @@ class Apelsin extends Method
     {
         // TODO: Implement getAdditionalInformation() method.
     }
-
-
 }

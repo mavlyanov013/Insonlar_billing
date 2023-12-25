@@ -153,11 +153,21 @@ abstract class PaycomMethod extends Model
     public function validAccount($attribute, $options)
     {
         $data = $this->account;
-        if (isset($data['user_data'])) {
+        if (isset($data['user_data']) && (PAYCOM_LIVE || $data['user_data'] === 'test_user')) {
             return true;
         }
 
         throw new PaycomJsonRPCError(self::MSG_INVALID_ACCOUNT_ID, -31050);
+    }
+
+    public function validAmount($attribute, $options)
+    {
+        $amount = $this->amount / 100;
+        if ($amount <= $this->_method->getMaxAmount() && $this->_method->getMinAmount() <= $amount) {
+            return true;
+        }
+
+        throw new PaycomJsonRPCError(self::MSG_INVALID_AMOUNT, -31001);
     }
 
     protected function getValidationError()

@@ -20,10 +20,10 @@ use yii\base\Model;
  */
 class ApiForm extends Model
 {
-    const ACTION_PREPARE  = 0;
+    const ACTION_PREPARE = 0;
     const ACTION_COMPLETE = 1;
 
-    const SCENARIO_PREPARE  = 'prepare';
+    const SCENARIO_PREPARE = 'prepare';
     const SCENARIO_COMPLETE = 'complete';
 
     public $click_trans_id;
@@ -75,7 +75,7 @@ class ApiForm extends Model
 
             [['sign_string'], 'validateSignature'],
 
-            [['error_note','merchant_trans_id'], 'safe'],
+            [['error_note', 'merchant_trans_id'], 'safe'],
         ];
     }
 
@@ -94,10 +94,13 @@ class ApiForm extends Model
     public function validateSignature($attribute, $options)
     {
         $fundId = ($this->action == self::ACTION_COMPLETE) ? $this->merchant_prepare_id : "";
-        $sign   = md5(
+
+        $clickConfig = $this->_method->getServiceData($this->service_id);
+
+        $sign = md5(
             $this->click_trans_id .
             $this->service_id .
-            $this->_method->getSecretKey() .
+            $clickConfig->getSecretKey() .
             $this->merchant_trans_id .
             $fundId .
             $this->amount .
@@ -170,21 +173,22 @@ class ApiForm extends Model
                     //OK, we should create invoice for this transaction
                     $payment = new Payment();
 
-                    $payment->status          = Payment::STATUS_PENDING;
-                    $payment->time            = $this->getTransactionTime();
-                    $payment->user_data       = $userData;
-                    $payment->method          = $this->_method->getCode();
-                    $payment->create_time     = $this->getCurrentTimeStamp();
-                    $payment->transaction_id  = $this->click_trans_id;
-                    $payment->click_paydoc_id = $this->click_paydoc_id;
-                    $payment->amount          = $this->amount;
+                    $payment->status           = Payment::STATUS_PENDING;
+                    $payment->time             = $this->getTransactionTime();
+                    $payment->user_data        = $userData;
+                    $payment->method           = $this->_method->getCode();
+                    $payment->create_time      = self::getCurrentTimeStamp();
+                    $payment->transaction_id   = $this->click_trans_id;
+                    $payment->click_paydoc_id  = $this->click_paydoc_id;
+                    $payment->click_service_id = $this->service_id;
+                    $payment->amount           = $this->amount;
                     $payment->addAllInformation([
-                                                    'click_trans_id'    => $this->click_trans_id,
-                                                    'click_paydoc_id'   => $this->click_paydoc_id,
-                                                    'click_service_id'  => $this->service_id,
-                                                    'click_sign_time'   => $this->sign_time,
-                                                    'click_sign_string' => $this->sign_string,
-                                                ]);
+                        'click_trans_id'    => $this->click_trans_id,
+                        'click_paydoc_id'   => $this->click_paydoc_id,
+                        'click_service_id'  => $this->service_id,
+                        'click_sign_time'   => $this->sign_time,
+                        'click_sign_string' => $this->sign_string,
+                    ]);
 
                     if ($payment->save()) {
                         return [
@@ -219,10 +223,10 @@ class ApiForm extends Model
                     if ($this->error == 0) {
                         $payment->status = Payment::STATUS_SUCCESS;
                         $payment->addAllInformation([
-                                                        'click_paydoc_id'   => $this->click_paydoc_id,
-                                                        'click_sign_time'   => $this->sign_time,
-                                                        'click_sign_string' => $this->sign_string,
-                                                    ]);
+                            'click_paydoc_id'   => $this->click_paydoc_id,
+                            'click_sign_time'   => $this->sign_time,
+                            'click_sign_string' => $this->sign_string,
+                        ]);
 
 
                         if ($payment->save()) {
@@ -237,9 +241,9 @@ class ApiForm extends Model
                     } else {
                         $payment->status = Payment::STATUS_CANCELLED;
                         $payment->addAllInformation([
-                                                        'click_error'      => $this->error,
-                                                        'click_error_note' => $this->error_note,
-                                                    ]);
+                            'click_error'      => $this->error,
+                            'click_error_note' => $this->error_note,
+                        ]);
                         if ($payment->save()) {
                             throw new ClickRequestException('Transaction cancelled', -9);
                         }
@@ -291,9 +295,9 @@ class ApiForm extends Model
     public function getPaymentByClickTransId($clickTransId)
     {
         return Payment::findOne([
-                                    'method'         => Click::METHOD_CODE,
-                                    'transaction_id' => $clickTransId,
-                                ]);
+            'method'         => Click::METHOD_CODE,
+            'transaction_id' => $clickTransId,
+        ]);
     }
 
     protected function getValidationError()

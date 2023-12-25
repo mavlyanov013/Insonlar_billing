@@ -2,14 +2,7 @@
 
 namespace common\models\payment;
 
-use common\models\App;
-use common\models\Order;
-use common\models\User;
-use common\models\UserApp;
-use Yii;
 use yii\base\BaseObject;
-use yii\base\Component;
-use yii\base\ErrorException;
 use yii\base\Model;
 
 /**
@@ -22,7 +15,7 @@ abstract class Method extends BaseObject
 {
     protected $_code;
 
-    public $enabled  = false;
+    public $enabled = false;
     public $liveMode = false;
     public $name;
     public $description;
@@ -63,6 +56,7 @@ abstract class Method extends BaseObject
 
     /**
      * Retrieve payment method code
+     *
      * @return string
      */
     public function getCode()

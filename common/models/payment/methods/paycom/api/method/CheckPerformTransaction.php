@@ -11,7 +11,8 @@ class CheckPerformTransaction extends PaycomMethod
     {
         return [
             [['amount', 'account'], 'required'],
-            [['amount'], 'validAccount'],
+            [['account'], 'validAccount'],
+            [['amount'], 'validAmount'],
         ];
     }
 
@@ -22,6 +23,4 @@ class CheckPerformTransaction extends PaycomMethod
             'allow' => true,
         ];
     }
-
-
 }

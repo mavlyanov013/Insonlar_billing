@@ -2,11 +2,8 @@
 
 namespace common\models\payment\methods\agr;
 
-use common\models\Order;
 use common\models\payment\methods\Agr;
 use common\models\payment\Payment;
-use common\models\UserBalanceFund;
-use common\models\UserBalanceHistory;
 use yii\base\Exception;
 use yii\base\Model;
 
@@ -65,6 +62,7 @@ class AgrApi extends Model
     public function rules()
     {
         return [
+            [['MERCHANT_TRANS_ID'], 'safe'],
             [[
                  'MERCHANT_TRANS_ID',
                  'SIGN_TIME',
@@ -106,7 +104,7 @@ class AgrApi extends Model
              ], 'required', 'on' => [self::SCENARIO_STATEMENT]],
 
             [['SIGN_TIME'], 'number', 'integerOnly' => true],
-
+            [['MERCHANT_TRANS_AMOUNT'], 'number', 'integerOnly' => false],
             [['ENVIRONMENT'], 'in', 'range' => ['live', 'sandbox']],
             [['STATUS'], 'in', 'range' => [self::STATUS_PAYED, self::STATUS_CANCELLED]],
 
@@ -115,15 +113,15 @@ class AgrApi extends Model
             [['PAYMENT_ID'], 'safe'],
             [['VENDOR_ID'], 'safe'],
 
-            [['MERCHANT_TRANS_ID'], 'validateMerchantTrans'],
-
             [[
                  'PAYMENT_ID',
                  'VENDOR_TRANS_ID',
-                 'MERCHANT_TRANS_AMOUNT',
                  'SIGN_TIME',
                  'ERROR',
              ], 'number', 'integerOnly' => true],
+
+            [['SIGN_STRING'], 'validateSignature'],
+
 
             [[
                  'PAYMENT_NAME',
@@ -134,31 +132,20 @@ class AgrApi extends Model
         ];
     }
 
-    public function afterValidate()
-    {
-        if (!$this->hasErrors())
-            $this->validateSignature();
 
-        parent::afterValidate();
-    }
-
-    public function validateMerchantTrans()
+    public function validateSignature($attribute, $options)
     {
-        if ($this->MERCHANT_TRANS_ID == "-1") {
-            throw new AgrRequestException('Order does not exists', -5);
-        }
-    }
-
-    public function validateSignature()
-    {
-        $sign = time();
         if ($this->ACTION == self::ACTION_INFO) {
             $sign = md5(
                 $this->_method->getSecretKey() .
                 $this->MERCHANT_TRANS_ID .
                 $this->SIGN_TIME
             );
-        } elseif ($this->ACTION == self::ACTION_PAY) {
+        } else if ($this->ACTION == self::ACTION_PAY) {
+            if (!$this->AGR_TRANS_ID) {
+                throw new AgrRequestException('Not enough parameters', -3);
+            }
+
             $sign = md5(
                 $this->_method->getSecretKey() .
                 $this->AGR_TRANS_ID .
@@ -170,7 +157,11 @@ class AgrApi extends Model
                 $this->ENVIRONMENT .
                 $this->SIGN_TIME
             );
-        } elseif ($this->ACTION == self::ACTION_NOTIFY) {
+        } else if ($this->ACTION == self::ACTION_NOTIFY) {
+            if (!$this->VENDOR_TRANS_ID || !$this->AGR_TRANS_ID) {
+                throw new AgrRequestException('Not enough parameters', -3);
+            }
+
             $sign = md5(
                 $this->_method->getSecretKey() .
                 $this->AGR_TRANS_ID .
@@ -178,14 +169,22 @@ class AgrApi extends Model
                 $this->STATUS .
                 $this->SIGN_TIME
             );
-        } elseif ($this->ACTION == self::ACTION_CANCEL) {
+        } else if ($this->ACTION == self::ACTION_CANCEL) {
+            if (!$this->VENDOR_TRANS_ID || !$this->AGR_TRANS_ID) {
+                throw new AgrRequestException('Not enough parameters', -3);
+            }
+
             $sign = md5(
                 $this->_method->getSecretKey() .
                 $this->AGR_TRANS_ID .
                 $this->VENDOR_TRANS_ID .
                 $this->SIGN_TIME
             );
-        } elseif ($this->ACTION == self::ACTION_STATEMENT) {
+        } else if ($this->ACTION == self::ACTION_STATEMENT) {
+            if (!$this->TO || !$this->FROM) {
+                throw new AgrRequestException('Not enough parameters', -3);
+            }
+
             $sign = md5(
                 $this->_method->getSecretKey() .
                 $this->FROM .
@@ -206,20 +205,37 @@ class AgrApi extends Model
     {
         switch ($action) {
             case self::ACTION_INFO:
+                if (array_key_exists('MERCHANT_TRANS_ID', $postData) && $postData['MERCHANT_TRANS_ID'] === "") {
+                    throw new AgrRequestException('The order does not exist', -5);
+                }
                 $model = new AgrApi(['scenario' => self::SCENARIO_INFO]);
-                $model->load(['form' => $postData], 'form');
+                $model->load(['AgrApi' => $postData]);
                 $model->ACTION = $action;
 
                 return $model->actionInfo();
             case self::ACTION_PAY:
+
+                if (array_key_exists('MERCHANT_TRANS_ID', $postData) && $postData['MERCHANT_TRANS_ID'] === "") {
+                    throw new AgrRequestException('The order does not exist', -5);
+                }
+
+                if (!array_key_exists('MERCHANT_TRANS_AMOUNT', $postData)) {
+                    throw new AgrRequestException('Not enough parameters', -3);
+                }
+
+                if (floatval($postData['MERCHANT_TRANS_AMOUNT']) <= 0) {
+                    throw new AgrRequestException('Incorrect parameter amount', -2);
+                }
+
+
                 $model = new AgrApi(['scenario' => self::SCENARIO_PAY]);
-                $model->load(['form' => $postData], 'form');
+                $model->load(['AgrApi' => $postData]);
                 $model->ACTION = $action;
 
                 return $model->actionPay();
             case self::ACTION_NOTIFY:
                 $model = new AgrApi(['scenario' => self::SCENARIO_NOTIFY]);
-                $model->load(['form' => $postData], 'form');
+                $model->load(['AgrApi' => $postData]);
                 $model->ACTION = $action;
 
                 return $model->actionNotify();
@@ -227,7 +243,7 @@ class AgrApi extends Model
 
             case self::ACTION_CANCEL:
                 $model = new AgrApi(['scenario' => self::SCENARIO_CANCEL]);
-                $model->load(['form' => $postData], 'form');
+                $model->load(['AgrApi' => $postData]);
                 $model->ACTION = $action;
 
                 return $model->actionCancel();
@@ -235,7 +251,7 @@ class AgrApi extends Model
 
             case self::ACTION_STATEMENT:
                 $model = new AgrApi(['scenario' => self::SCENARIO_STATEMENT]);
-                $model->load(['form' => $postData], 'form');
+                $model->load(['AgrApi' => $postData]);
                 $model->ACTION = $action;
 
                 return $model->actionStatement();
@@ -293,12 +309,11 @@ class AgrApi extends Model
                 $payment->status         = Payment::STATUS_PENDING;
                 $payment->time           = intval($this->SIGN_TIME);
                 $payment->create_time    = self::getCurrentTimeStamp();
-                $payment->amount         = $this->MERCHANT_TRANS_AMOUNT;
+                $payment->amount_usd     = $this->MERCHANT_TRANS_AMOUNT;
                 $payment->method         = $this->_method->getCode();
                 $payment->transaction_id = $this->AGR_TRANS_ID;
                 $payment->agr_method     = $this->PAYMENT_NAME;
                 $payment->user_data      = $this->MERCHANT_TRANS_ID;
-                $payment->environment    = $this->ENVIRONMENT;
                 $payment->live_mode      = $this->ENVIRONMENT == self::ENVIRONMENT_LIVE;
 
                 $payment->addAllInformation([
@@ -317,7 +332,7 @@ class AgrApi extends Model
                         'ERROR'           => 0,
                         'ERROR_NOTE'      => 'Success',
                     ];
-                } elseif ($payment->hasErrors('amount')) {
+                } else if ($payment->hasErrors('amount')) {
                     throw new AgrRequestException('Incorrect parameter amount', -2);
                 }
 
@@ -325,6 +340,7 @@ class AgrApi extends Model
             }
         }
 
+        //throw new AgrRequestException($this->getValidationError(), -3);
         throw new AgrRequestException('Not enough parameters', -3);
     }
 
@@ -344,7 +360,8 @@ class AgrApi extends Model
                         ];
                     }
 
-                    throw new AgrRequestException('Failed to update user', -7);
+                    $errors = $payment->getFirstErrors();
+                    throw new AgrRequestException(array_pop($errors), -7);
 
                 } else if ($this->STATUS == self::STATUS_CANCELLED) {
                     $payment->status      = Payment::STATUS_CANCELLED;
@@ -356,8 +373,8 @@ class AgrApi extends Model
                             'ERROR_NOTE' => 'Success',
                         ];
                     }
-
-                    throw new AgrRequestException('Failed to update user', -7);
+                    $errors = $payment->getFirstErrors();
+                    throw new AgrRequestException(array_pop($errors), -7);
                 }
                 throw new AgrRequestException('Notify status not equals to 2 or 3', -8);
             }
@@ -371,7 +388,6 @@ class AgrApi extends Model
     {
         if ($this->validate()) {
             if ($payment = $this->getPaymentTransId($this->VENDOR_TRANS_ID)) {
-
                 //TODO check if payment amount not spent for outgoings
                 $canBeCancelled = true;
                 if ($canBeCancelled && $payment->status == Payment::STATUS_SUCCESS) {
@@ -398,16 +414,16 @@ class AgrApi extends Model
          */
         if ($this->validate()) {
             $data   = Payment::find()
-                             ->andWhere(['$eq', 'method', $this->_method->getCode()])
-                             ->andWhere(['$gte', 'time', $this->FROM])
-                             ->andWhere(['$lte', 'time', $this->TO])
-                             ->orderBy(['time' => SORT_ASC])
-                             ->all();
+                ->andWhere(['$eq', 'method', $this->_method->getCode()])
+                ->andWhere(['$gte', 'time', $this->FROM])
+                ->andWhere(['$lte', 'time', $this->TO])
+                ->orderBy(['time' => SORT_ASC])
+                ->all();
             $result = [];
 
             foreach ($data as $transaction) {
                 $result[] = [
-                    "ENVIRONMENT"           => $transaction->environment,
+                    "ENVIRONMENT"           => $transaction->getInfo('ENVIRONMENT'),
                     "AGR_TRANS_ID"          => $transaction->transaction_id,
                     "VENDOR_TRANS_ID"       => $transaction->transaction_id,
                     "MERCHANT_TRANS_ID"     => $transaction->user_data,

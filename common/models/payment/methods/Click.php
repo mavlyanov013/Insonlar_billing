@@ -3,9 +3,10 @@
 namespace common\models\payment\methods;
 
 use common\models\payment\Method;
+use common\models\payment\methods\click\ClickRequestException;
 use common\models\payment\Payment;
 use common\models\User;
-use Yii;
+use yii\base\BaseObject;
 use yii\base\Model;
 
 /**
@@ -16,19 +17,21 @@ use yii\base\Model;
  */
 class Click extends Method
 {
-    const CONFIG_SECRET_KEY          = 'secret_key';
-    const CONFIG_PAYMENT_URL         = 'payment_url';
-    const CONFIG_RETURN_URL          = 'return_url';
-    const CONFIG_INVOICE_URL         = 'invoice_url';
-    const CONFIG_MERCHANT_ID         = 'merchant_id';
-    const CONFIG_MERCHANT_USER_ID    = 'merchant_user_id';
+    const CONFIG_SECRET_KEY = 'secret_key';
+    const CONFIG_PAYMENT_URL = 'payment_url';
+    const CONFIG_RETURN_URL = 'return_url';
+    const CONFIG_INVOICE_URL = 'invoice_url';
+    const CONFIG_MERCHANT_ID = 'merchant_id';
+    const CONFIG_MERCHANT_USER_ID = 'merchant_user_id';
     const CONFIG_MERCHANT_SERVICE_ID = 'service_id';
+    const CONFIG_MERCHANT_SERVICES = 'clickServices';
 
     const CONFIG_MIN_AMOUNT = 'minAmount';
     const CONFIG_MAX_AMOUNT = 'maxAmount';
 
     const METHOD_CODE = 'click';
-    public $name        = 'Click';
+
+    public $name = 'Click';
     public $description = 'Users can pay using Click payment system';
 
     protected function isMethodAvailableForApp()
@@ -112,5 +115,60 @@ class Click extends Method
         return intval($this->getConfig(self::CONFIG_MAX_AMOUNT));
     }
 
+    public function getServiceData($serviceId)
+    {
+        $services = $this->getConfig(self::CONFIG_MERCHANT_SERVICES);
+        if (isset($services[$serviceId])) {
+            return new ClickConfig($services[$serviceId]);
+        }
 
+        return new ClickRequestException("Service $serviceId not found", -8);
+    }
+
+    public function getServiceIds()
+    {
+        $services = $this->getConfig(self::CONFIG_MERCHANT_SERVICES);
+
+        return array_keys($services);
+    }
+}
+
+class ClickConfig extends BaseObject
+{
+    public $service_id;
+    public $secret_key;
+    public $merchant_id;
+    public $merchant_user_id;
+
+    /**
+     * @return mixed
+     */
+    public function getServiceId()
+    {
+        return $this->service_id;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSecretKey()
+    {
+        return $this->secret_key;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMerchantId()
+    {
+        return $this->merchant_id;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMerchantUserId()
+    {
+        return $this->merchant_user_id;
+    }
 }
