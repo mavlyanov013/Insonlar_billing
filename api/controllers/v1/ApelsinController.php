@@ -2,7 +2,6 @@
 
 namespace api\controllers\v1;
 
-use api\components\MySoapServer;
 use common\components\Config;
 use common\models\payment\methods\Apelsin;
 use common\models\payment\methods\paycom\api\PaycomApiUser;
@@ -37,7 +36,7 @@ class ApelsinController extends Controller
             'soap_version' => SOAP_1_2,
         ];
 
-        $server = new \SoapServer("http://insonlar.mehrli.uz/ApelsinProviderWebService.wsdl", $options);
+        $server = new \SoapServer("https://insonlar.mehrli.uz/ApelsinProviderWebService.wsdl", $options);
 
         $server->setObject(new PaynetMethod(Apelsin::METHOD_CODE));
 
