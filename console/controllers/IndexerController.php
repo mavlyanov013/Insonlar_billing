@@ -107,7 +107,7 @@ class IndexerController extends Controller
                     if ($file) {
                         //
                         $bot->sendDocument($item, new \CURLFile($file),
-                            "Mexrli insonlar safida bo'ling:\n\n👉 <a href='https://payme.uz/fallback/merchant/?id=6589656f5c8188fb6e90e859'>PAYME</> | <a href='https://my.click.uz/services/pay/?service_id=13524'>CLICK</a> | <a href='https://www.apelsin.uz/open-service?serviceId=12030307'>APELSIN</a>",
+                            "Mexrli insonlar safida bo'ling:\n\n👉 <a href='https://payme.uz/fallback/merchant/?id=65897b594de4489c5e278a0f'>PAYME</> | <a href='https://my.click.uz/services/pay/?service_id=13524'>CLICK</a> | <a href='https://www.apelsin.uz/open-service?serviceId=12030307'>APELSIN</a>",
                             null,
                             null,
                             false,
