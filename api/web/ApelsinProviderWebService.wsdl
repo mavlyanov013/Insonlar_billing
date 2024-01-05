@@ -133,7 +133,7 @@
     </wsdl:binding>
     <wsdl:service name="ProviderWebService">
         <wsdl:port name="ProviderWebServicePort" binding="tns:ProviderWebServiceBinding">
-            <soap:address location="https://insonlar.mehrli.uz/v1/apelsin"/>
+            <soap:address location="http://insonlar.mehrli.uz/v1/apelsin"/>
         </wsdl:port>
     </wsdl:service>
 </wsdl:definitions>
