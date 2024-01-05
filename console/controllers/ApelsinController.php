@@ -40,7 +40,7 @@ class ApelsinController extends Controller
             'encoding'           => 'UTF-8',
             'soap_version'       => SOAP_1_2,
         );
-        $this->client = new SoapClient('https://insonlar.mehrli.uz/ApelsinProviderWebService.wsdl', $options);
+        $this->client = new SoapClient('http://insonlar.mehrli.uz/ApelsinProviderWebService.wsdl', $options);
 
         parent::init();
     }
