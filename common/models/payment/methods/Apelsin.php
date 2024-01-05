@@ -12,8 +12,8 @@ class Apelsin extends Method
 {
 
     const CONFIG_ALLOWED_IPS = 'allowedIps';
-    const CONFIG_USER_NAME   = 'apelsinOrgUserName';
-    const CONFIG_PASSWORD    = 'apelsinOrgPassword';
+    const CONFIG_USER_NAME   = 'apelsinUserName';
+    const CONFIG_PASSWORD    = 'apelsinPassword';
     const CONFIG_MIN_AMOUNT  = 'minAmount';
     const CONFIG_MAX_AMOUNT  = 'maxAmount';
 
