@@ -18,8 +18,8 @@ use yii\console\Controller;
 
 class ClickController extends Controller
 {
-    protected $_localUrl = 'http://api.saxovat.lc/v1/click';
-    protected $_liveUrl  = 'https://api.mehrli.uz/v1/click';
+    protected $_localUrl = 'http://api.insonlar.lc/v1/click';
+    protected $_liveUrl  = 'https://insonlar.mehrli.uz/v1/click';
 
     public function actionTest()
     {

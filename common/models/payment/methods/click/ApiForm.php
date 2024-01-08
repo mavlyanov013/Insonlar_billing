@@ -94,13 +94,10 @@ class ApiForm extends Model
     public function validateSignature($attribute, $options)
     {
         $fundId = ($this->action == self::ACTION_COMPLETE) ? $this->merchant_prepare_id : "";
-
-        $clickConfig = $this->_method->getServiceData($this->service_id);
-
-        $sign = md5(
+        $sign   = md5(
             $this->click_trans_id .
             $this->service_id .
-            $clickConfig->getSecretKey() .
+            $this->_method->getSecretKey() .
             $this->merchant_trans_id .
             $fundId .
             $this->amount .
