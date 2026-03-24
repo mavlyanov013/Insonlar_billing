@@ -59,7 +59,7 @@ class SiteController extends BaseController
                 }
             } else {
                 if ($agrPayment->isActive()) {
-                    if ($result = $agrPayment->prepareForm($amount, $name)) {
+                    if ($result = $agrPayment->prepareFormWithParams($amount, $name)) {
                         $this->addSuccess(__('Siz PaSys to\'lov tizimiga o\'tkazilasiz'));
                     } else {
                         $errors = $agrPayment->getErrors();
@@ -67,7 +67,6 @@ class SiteController extends BaseController
                         $this->addError($errors[0]);
                     }
                 }
-
             }
         }
 

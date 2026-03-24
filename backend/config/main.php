@@ -63,14 +63,14 @@ return [
         'assetManager' => array(
             'linkAssets'      => true,
             'appendTimestamp' => true,
-            'bundles'         => [
-                'yii\web\JqueryAsset' => [
-                    'sourcePath' => '@app/assets/backend',
-                    'js'         => [
-                        'js/jquery.min.js',
-                    ],
-                ],
-            ],
+//            'bundles'         => [
+//                'yii\web\JqueryAsset' => [
+//                    'sourcePath' => '@app/assets/backend',
+//                    'js'         => [
+//                        'js/jquery.min.js',
+//                    ],
+//                ],
+//            ],
         ),
         'pdf'          => [
             'class'       => Pdf::classname(),

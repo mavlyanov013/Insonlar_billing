@@ -2,10 +2,10 @@
 use app\assets\BackendAsset;
 use yii\helpers\Html;
 
-
 /* @var $this \yii\web\View */
 /* @var $content string */
-\app\assets\UrbanAsset::register($this);
+
+// \app\assets\UrbanAsset::register($this);
 BackendAsset::register($this);
 ?>
 <?php $this->beginPage() ?>

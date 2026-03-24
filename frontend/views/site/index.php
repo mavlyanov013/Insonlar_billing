@@ -65,7 +65,7 @@ $method = Yii::$app->request->get('method');
                                         </div>
                                     </div>
                                 </div>
-                                <input type="hidden" name="method" value="agr" style="display: none">
+                                <input type="hidden" name="method" value="paycom" style="display: none">
                                 <button type="submit" class="btn btn-styled btn-lg btn-block btn-base-1 mt-4">
                                     <?= __('To\'lov') ?>
                                 </button>

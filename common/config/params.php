@@ -82,9 +82,9 @@ return [
                 'minAmount'       => 500,
                 'maxAmount'       => 100000000,
                 'allowedIps'      => [],
-                'serviceLocation' => 'https://insonlar.mehrli.uz/v1/paynet',
-                'wsdlLocation'    => 'https://insonlar.mehrli.uz/v1/paynet/wsdl',
-                'xsdLocation'     => 'https://insonlar.mehrli.uz/v1/paynet/xsd',
+                'serviceLocation' => 'https://unrenounced-roxann-immoveably.ngrok-free.dev/v1/paynet',
+                'wsdlLocation'    => 'https://unrenounced-roxann-immoveably.ngrok-free.dev/ProviderWebService.wsdl',
+                'xsdLocation'     => 'https://unrenounced-roxann-immoveably.ngrok-free.dev/ProviderWebService.xsd',
             ],
         ],
         'apelsin' => [

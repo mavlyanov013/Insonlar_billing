@@ -254,16 +254,13 @@
 
   var psTarg = $('.sidebar-panel > nav');
 
-  function initScrollbars () {
-    if (app.hasClass('layout-small-menu') || app.hasClass('layout-static-sidebar') || app.hasClass('layout-boxed')) {
-      return;
-    }
+    function initScrollbars() {
+        if (!window.jQuery || !$.fn.perfectScrollbar) {
+            return;
+        }
 
-    $('.sidebar-panel > nav').perfectScrollbar({
-      wheelPropagation: true,
-      suppressScrollX: true
-    });
-  }
+        $('.scrollable, .menu-content, .main-sidebar, .sidebar-panel').perfectScrollbar();
+    }
 
   function destroyScrollbars () {
     psTarg.perfectScrollbar('destroy').removeClass();

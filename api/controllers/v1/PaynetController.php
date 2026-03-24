@@ -36,7 +36,7 @@ class PaynetController extends Controller
             'soap_version' => SOAP_1_2,
         ];
 
-        $server = new \SoapServer("http://insonlar.mehrli.uz/ProviderWebService.wsdl", $options);
+        $server = new \SoapServer(__DIR__ . '/../../web/ProviderWebService.wsdl', $options);
 
         $server->setObject(new PaynetMethod(Paynet::METHOD_CODE));
 

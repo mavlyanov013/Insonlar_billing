@@ -114,6 +114,10 @@
                     ".env.example": ".env"
                 }
             ]
+        },
+        "asset-installer-paths": {
+            "bower-asset-library": "vendor/bower",
+            "npm-asset-library": "vendor/npm"
         }
     }
 }

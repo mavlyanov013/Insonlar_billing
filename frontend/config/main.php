@@ -54,26 +54,26 @@ return [
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
-        'assetManager' => array(
-            'linkAssets'      => true,
+        'assetManager' => [
+            'linkAssets' => true,
             'appendTimestamp' => true,
-            'basePath'        => '@static/assets',
-            'baseUrl'         => getenv('STATIC_URL') . 'assets/',
-            'bundles'         => [
-                'yii\bootstrap\BootstrapAsset'       => [
+            'basePath' => '@webroot/assets',
+            'baseUrl' => '@web/assets',
+            'bundles' => [
+                'yii\bootstrap\BootstrapAsset' => [
                     'sourcePath' => '@frontend/assets/app',
-                    'css'        => [
-                        'vendor/bootstrap/js/bootstrap.min.css',
+                    'css' => [
+                        'vendor/bootstrap/css/bootstrap.min.css',
                     ],
                 ],
                 'yii\bootstrap\BootstrapPluginAsset' => [
                     'sourcePath' => '@frontend/assets/app',
-                    'js'         => [
+                    'js' => [
                         'vendor/bootstrap/js/bootstrap.min.js',
                     ],
                 ],
             ],
-        ),
+        ],
         /*'assetsAutoCompress' => [
             'class'        => \common\components\AssetCompress::class,
             //'enabled'         => true,
