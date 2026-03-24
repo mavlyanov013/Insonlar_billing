@@ -105,12 +105,10 @@ $config = [
             ],
         ],*/
 
-        'mongodb'     => [
+        'mongodb' => [
             'class' => '\yii\mongodb\Connection',
             'dsn'   => getenv('MONGODB_DSN'),
-            //'defaultDatabaseName' => 'base'
-            /* 'enableLogging'   => YII_DEBUG,
-             'enableProfiling' => YII_DEBUG,*/
+            'defaultDatabaseName' => 'insonlar',
         ],
         'fileStorage' => [
             'class'       => '\trntv\filekit\Storage',

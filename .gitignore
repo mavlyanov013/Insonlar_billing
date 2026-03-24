@@ -6,7 +6,7 @@
 # phpstorm project files
 .idea
 .idea/*/*
-composer.lock
+#composer.lock
 # netbeans project files
 nbproject
 
