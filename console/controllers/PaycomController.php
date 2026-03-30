@@ -20,7 +20,7 @@ use yii\console\Controller;
 class PaycomController extends Controller
 {
     protected $_localUrl = 'http://api.saxovat.lc/v1/paycom';
-    protected $_liveUrl  = 'http://insonlar.mehrli.uz/v1/paycom';
+    protected $_liveUrl  = 'https://mexrli.complex-solutions.uz/v1/paycom';
 
     protected $params = [
         'amount'  => 172400000,

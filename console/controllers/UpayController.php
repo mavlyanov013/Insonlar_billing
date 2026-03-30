@@ -19,7 +19,7 @@ use yii\console\Controller;
 class UpayController extends Controller
 {
     protected $_localUrl = 'http://api.saxovat.lc/v1/upay';
-    protected $_liveUrl  = 'http://insonlar.mehrli.uz/v1/upay';
+    protected $_liveUrl  = 'https://mexrli.complex-solutions.uz/v1/upay';
 
     public function actionTest($amount, $account, $live = false)
     {
