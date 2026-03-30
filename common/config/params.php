@@ -26,7 +26,7 @@ return [
                 'merchant_id'  => '6589656f5c8188fb6e90e859',
                 'merchant_key' => PAYCOM_LIVE ? 'vARaWm5E0e9yd4RJiRES1#H&D1ngs6K7ou3H' : 'E#SVCXrO?qR6dugHUsI%ITk6VWE#jcD7EmA4',
                 'payment_url'  => PAYCOM_LIVE ? 'https://checkout.paycom.uz' : 'https://test.paycom.uz',
-                'return_url'   => 'https://www.mehrli.uz?payme=success',
+                'return_url'   => 'https://mexrli.complex-solutions.uz?payme=success',
             ],
         ],
         'click'   => [
