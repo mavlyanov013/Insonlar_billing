@@ -36,7 +36,7 @@ class ApelsinController extends Controller
             'soap_version' => SOAP_1_2,
         ];
 
-        $server = new \SoapServer("https://mexrli.complex-solutions.uz/ApelsinProviderWebService.wsdl", $options);
+        $server = new \SoapServer("https://mexrli.complex-solutions.uz/api/ApelsinProviderWebService.wsdl", $options);
 
         $server->setObject(new PaynetMethod(Apelsin::METHOD_CODE));
 
