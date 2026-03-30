@@ -41,7 +41,7 @@ return [
                 'secret_key'       => 'qHXuooFhKn',
                 'payment_url'      => 'https://my.click.uz/pay/',
                 'invoice_url'      => 'https://merchant.click.uz/api/',
-                'return_url'       => 'https://saxovat.uz/?success=click',
+                'return_url'       => 'https://mexrli.complex-solutions.uz/?success=click',
                 'check_signature'  => true,
                 'minAmount'        => 500,
                 'maxAmount'        => 100000000,
