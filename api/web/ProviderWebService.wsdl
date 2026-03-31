@@ -133,7 +133,7 @@
     </wsdl:binding>
     <wsdl:service name="ProviderWebService">
         <wsdl:port name="ProviderWebServicePort" binding="tns:ProviderWebServiceBinding">
-            <soap:address location="https://mexrli.complex-solutions.uz/paynet"/>
+            <soap:address location="https://mexrli.complex-solutions.uz/api/v1/paynet"/>
         </wsdl:port>
     </wsdl:service>
 </wsdl:definitions>
