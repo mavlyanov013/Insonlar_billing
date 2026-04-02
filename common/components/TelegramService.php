@@ -100,7 +100,7 @@ class TelegramService
         $category = (string)$payment->category;
         $userData = trim((string)$payment->user_data);
 
-        $baseDir = Yii::getAlias('@runtime/telegram-payments');
+        $baseDir = Yii::getAlias('@common/../runtime/telegram-payments');
         if (!is_dir($baseDir)) {
             mkdir($baseDir, 0777, true);
         }
@@ -108,10 +108,23 @@ class TelegramService
         $imagePath = $baseDir . '/payment-' . $transactionId . '.jpg';
         $pdfPath   = $baseDir . '/payment-' . $transactionId . '.pdf';
 
-        $this->generatePaymentImage($imagePath, [
+        $photoCaption = "💚 <b>Yangi xayriya tushdi</b>\n"
+            . "💰 <b>Summa:</b> {$amount} so'm\n"
+            . "💳 <b>To'lov turi:</b> {$method}\n"
+            . "🕒 <b>Vaqt:</b> {$date}";
+
+        $docCaption = "Mexrli insonlar safida bo'ling:\n👉 PAYME | CLICK | APELSIN";
+
+        $imageGenerated = $this->generatePaymentImage($imagePath, [
             'amount' => $amount,
             'date' => $date,
         ]);
+
+        if ($imageGenerated && file_exists($imagePath)) {
+            $this->sendPhoto($imagePath, $photoCaption);
+        } else {
+            $this->sendMessage($photoCaption);
+        }
 
         $this->generatePaymentPdf($pdfPath, [
             'amount' => $amount,
@@ -123,15 +136,9 @@ class TelegramService
             'userData' => $userData,
         ]);
 
-        $photoCaption = "💚 <b>Yangi xayriya tushdi</b>\n"
-            . "💰 <b>Summa:</b> {$amount} so'm\n"
-            . "💳 <b>To'lov turi:</b> {$method}\n"
-            . "🕒 <b>Vaqt:</b> {$date}";
-
-        $docCaption = "Mexrli insonlar safida bo'ling:\n👉 PAYME | CLICK | APELSIN";
-
-        $this->sendPhoto($imagePath, $photoCaption);
-        $this->sendDocument($pdfPath, $docCaption);
+        if (file_exists($pdfPath)) {
+            $this->sendDocument($pdfPath, $docCaption);
+        }
 
         return true;
     }
@@ -141,29 +148,39 @@ class TelegramService
         $templatePath = \Yii::getAlias('@common/assets/payment-template.jpg');
 
         if (!file_exists($templatePath)) {
+            Yii::error('Telegram template not found: ' . $templatePath, 'telegram');
+            return false;
+        }
+
+        $fontBold = '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf';
+        $font = '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf';
+
+        if (!file_exists($fontBold) || !file_exists($font)) {
+            Yii::error('Telegram font file not found', 'telegram');
             return false;
         }
 
         $image = imagecreatefromjpeg($templatePath);
 
+        if (!$image) {
+            Yii::error('Failed to open template image: ' . $templatePath, 'telegram');
+            return false;
+        }
+
         $blue  = imagecolorallocate($image, 0, 115, 201);
         $black = imagecolorallocate($image, 40, 40, 40);
 
-        // Font yo‘li (serverda bo‘lishi kerak)
-        $fontBold = '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf';
-        $font = '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf';
-
-        // SUMMA
         imagettftext($image, 48, 0, 250, 600, $blue, $fontBold, $data['amount']);
-
-        // TEXT
         imagettftext($image, 28, 0, 220, 700, $black, $font, "so'm xayriya qilindi");
-
-        // SANA
         imagettftext($image, 20, 0, 300, 900, $black, $font, $data['date']);
 
         imagejpeg($image, $outputPath, 95);
         imagedestroy($image);
+
+        if (!file_exists($outputPath)) {
+            Yii::error('Telegram image not created: ' . $outputPath, 'telegram');
+            return false;
+        }
 
         return true;
     }
