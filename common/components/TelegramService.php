@@ -92,6 +92,8 @@ class TelegramService
 
     public function sendPaymentNotification(Payment $payment)
     {
+        Yii::error('telegram: sendPaymentNotification started', 'telegram');
+
         $amount = number_format((float)$payment->amount, 0, '.', ' ');
         $date = date('d-m-Y H:i:s', (int)($payment->time / 1000));
         $transactionId = (string)$payment->transaction_id;
@@ -101,12 +103,17 @@ class TelegramService
         $userData = trim((string)$payment->user_data);
 
         $baseDir = Yii::getAlias('@common/../runtime/telegram-payments');
+        Yii::error('telegram: baseDir=' . $baseDir, 'telegram');
+
         if (!is_dir($baseDir)) {
             mkdir($baseDir, 0777, true);
         }
 
         $imagePath = $baseDir . '/payment-' . $transactionId . '.jpg';
         $pdfPath   = $baseDir . '/payment-' . $transactionId . '.pdf';
+
+        Yii::error('telegram: imagePath=' . $imagePath, 'telegram');
+        Yii::error('telegram: pdfPath=' . $pdfPath, 'telegram');
 
         $photoCaption = "💚 <b>Yangi xayriya tushdi</b>\n"
             . "💰 <b>Summa:</b> {$amount} so'm\n"
@@ -120,10 +127,15 @@ class TelegramService
             'date' => $date,
         ]);
 
+        Yii::error('telegram: imageGenerated=' . var_export($imageGenerated, true), 'telegram');
+        Yii::error('telegram: imageExists=' . (file_exists($imagePath) ? 'yes' : 'no'), 'telegram');
+
         if ($imageGenerated && file_exists($imagePath)) {
-            $this->sendPhoto($imagePath, $photoCaption);
+            $photoResult = $this->sendPhoto($imagePath, $photoCaption);
+            Yii::error('telegram: sendPhoto result=' . $photoResult, 'telegram');
         } else {
-            $this->sendMessage($photoCaption);
+            $textResult = $this->sendMessage($photoCaption);
+            Yii::error('telegram: fallback sendMessage result=' . $textResult, 'telegram');
         }
 
         $this->generatePaymentPdf($pdfPath, [
@@ -136,9 +148,14 @@ class TelegramService
             'userData' => $userData,
         ]);
 
+        Yii::error('telegram: pdfExists=' . (file_exists($pdfPath) ? 'yes' : 'no'), 'telegram');
+
         if (file_exists($pdfPath)) {
-            $this->sendDocument($pdfPath, $docCaption);
+            $docResult = $this->sendDocument($pdfPath, $docCaption);
+            Yii::error('telegram: sendDocument result=' . $docResult, 'telegram');
         }
+
+        Yii::error('telegram: sendPaymentNotification finished', 'telegram');
 
         return true;
     }
@@ -146,9 +163,10 @@ class TelegramService
     protected function generatePaymentImage($outputPath, array $data)
     {
         $templatePath = \Yii::getAlias('@common/assets/payment-template.jpg');
+        Yii::error('telegram: templatePath=' . $templatePath, 'telegram');
 
         if (!file_exists($templatePath)) {
-            Yii::error('Telegram template not found: ' . $templatePath, 'telegram');
+            Yii::error('telegram: template not found', 'telegram');
             return false;
         }
 
@@ -156,14 +174,14 @@ class TelegramService
         $font = '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf';
 
         if (!file_exists($fontBold) || !file_exists($font)) {
-            Yii::error('Telegram font file not found', 'telegram');
+            Yii::error('telegram: font not found', 'telegram');
             return false;
         }
 
         $image = imagecreatefromjpeg($templatePath);
 
         if (!$image) {
-            Yii::error('Failed to open template image: ' . $templatePath, 'telegram');
+            Yii::error('telegram: imagecreatefromjpeg failed', 'telegram');
             return false;
         }
 
@@ -177,12 +195,9 @@ class TelegramService
         imagejpeg($image, $outputPath, 95);
         imagedestroy($image);
 
-        if (!file_exists($outputPath)) {
-            Yii::error('Telegram image not created: ' . $outputPath, 'telegram');
-            return false;
-        }
+        Yii::error('telegram: output image created=' . (file_exists($outputPath) ? 'yes' : 'no'), 'telegram');
 
-        return true;
+        return file_exists($outputPath);
     }
 
     protected function generatePaymentPdf($outputPath, array $data)
