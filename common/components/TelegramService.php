@@ -138,49 +138,34 @@ class TelegramService
 
     protected function generatePaymentImage($outputPath, array $data)
     {
-        $width = 900;
-        $height = 1200;
+        $templatePath = \Yii::getAlias('@common/assets/payment-template.jpg');
 
-        $image = imagecreatetruecolor($width, $height);
+        if (!file_exists($templatePath)) {
+            return false;
+        }
 
-        $white = imagecolorallocate($image, 255, 255, 255);
-        $black = imagecolorallocate($image, 35, 35, 35);
+        $image = imagecreatefromjpeg($templatePath);
+
         $blue  = imagecolorallocate($image, 0, 115, 201);
-        $green = imagecolorallocate($image, 122, 168, 72);
-        $lightGreen = imagecolorallocate($image, 229, 240, 218);
-        $gray = imagecolorallocate($image, 110, 110, 110);
+        $black = imagecolorallocate($image, 40, 40, 40);
 
-        imagefill($image, 0, 0, $white);
+        // Font yo‘li (serverda bo‘lishi kerak)
+        $fontBold = '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf';
+        $font = '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf';
 
-        imagefilledrectangle($image, 0, 760, $width, $height, $lightGreen);
-        imagefilledellipse($image, 450, 950, 700, 280, $green);
+        // SUMMA
+        imagettftext($image, 48, 0, 250, 600, $blue, $fontBold, $data['amount']);
 
-        imagearc($image, 450, 200, 300, 300, 0, 360, $blue);
-        imagestring($image, 5, 315, 120, 'MEHRLI INSONLAR', $blue);
+        // TEXT
+        imagettftext($image, 28, 0, 220, 700, $black, $font, "so'm xayriya qilindi");
 
-        imagefilledellipse($image, 450, 210, 26, 26, $green);
-        imagefilledellipse($image, 395, 245, 26, 26, $blue);
-        imagefilledellipse($image, 505, 245, 26, 26, $blue);
-        imageline($image, 450, 220, 450, 305, $green);
-        imageline($image, 450, 250, 390, 340, $green);
-        imageline($image, 450, 250, 510, 340, $green);
-        imageline($image, 450, 300, 420, 400, $green);
-        imageline($image, 450, 300, 480, 400, $green);
+        // SANA
+        imagettftext($image, 20, 0, 300, 900, $black, $font, $data['date']);
 
-        imagearc($image, 450, 430, 300, 120, 200, 340, $green);
-        imagearc($image, 330, 500, 140, 220, 250, 360, $blue);
-        imagearc($image, 570, 500, 140, 220, 180, 290, $green);
-
-        imagestring($image, 5, 330, 520, 'Mehrli insonlar', $blue);
-
-        imagestring($image, 5, 390, 610, 'Bugun', $black);
-        imagestring($image, 5, 300, 700, $data['amount'], $blue);
-        imagestring($image, 5, 205, 790, "so'm xayriya qilindi", $black);
-
-        imagestring($image, 4, 315, 1080, $data['date'], $gray);
-
-        imagejpeg($image, $outputPath, 92);
+        imagejpeg($image, $outputPath, 95);
         imagedestroy($image);
+
+        return true;
     }
 
     protected function generatePaymentPdf($outputPath, array $data)
