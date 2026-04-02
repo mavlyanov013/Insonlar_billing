@@ -40,7 +40,7 @@ return [
         'user'         => [
             'identityClass'   => 'common\models\Admin',
             'enableAutoLogin' => true,
-            'loginUrl'        => ['/backend/dashboard/login'],
+            'loginUrl'        => '/dashboard/login',
             'identityCookie'  => [
                 'name' => '_backendUser',
             ],
@@ -60,12 +60,20 @@ return [
         'errorHandler' => [
             'errorAction' => 'dashboard/error',
         ],
-        'assetManager' => [
-    'linkAssets' => false,
-    'appendTimestamp' => true,
-    'basePath' => '@backend/web/assets',
+        'assetManager' => array(
+            'linkAssets'      => true,
+            'appendTimestamp' => true,
+'basePath' => '@backend/web/assets',
     'baseUrl' => '/backend/assets',
-        ],
+//            'bundles'         => [
+//                'yii\web\JqueryAsset' => [
+//                    'sourcePath' => '@app/assets/backend',
+//                    'js'         => [
+//                        'js/jquery.min.js',
+//                    ],
+//                ],
+//            ],
+        ),
         'pdf'          => [
             'class'       => Pdf::classname(),
             'format'      => Pdf::FORMAT_A4,

@@ -54,7 +54,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                      'format'    => 'raw',
                                      'value'     => function ($model) {
                                          $r = $model->url . "<br><span class='text-sm'>" . $model->get . "</span>";
-                                         return Html::a($r, ['system/user-logs-view', 'id' => $model->id], ['data-pjax' => 0, 'target' => '_blank']);
+                                         return Html::a($r, ['/backend/system/user-logs-view', 'id' => $model->id], ['data-pjax' => 0, 'target' => '_blank']);
                                      },
                                  ],
                                  [

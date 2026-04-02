@@ -12,7 +12,7 @@ use common\models\Log;
 use yii\widgets\ActiveForm;
 
 $this->title                   = $model->url;
-$this->params['breadcrumbs'][] = ['url' => ['system/user-logs'], 'label' => __('User Logs')];
+$this->params['breadcrumbs'][] = ['url' => ['/backend/system/user-logs'], 'label' => __('User Logs')];
 $this->params['breadcrumbs'][] = $this->title;
 
 $data         = $model->getAttributes();

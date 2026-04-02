@@ -96,7 +96,9 @@ var backendHelper = {
     $(document).on('ready pjax:success', function () {
         //setFocusToSearch();
         setDeleteButton();
-        $('.icp-auto').iconpicker();
+        if (typeof $.fn.iconpicker === 'function') {
+ 	$('.icp-auto').iconpicker();
+	}
         $('.selectable-row tr').on('click', function () {
             $(this).find('.checkbox input:first-child').click();
         });

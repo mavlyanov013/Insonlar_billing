@@ -18,7 +18,7 @@ class View extends \yii\web\View
         /*'store'     => [
             'icon'  => 'folder-open',
             'label' => 'Web-site',
-            'url'   => '#',
+            'url'   => '/backend/payment/index',
             'items' => [
                 'category/index' => [
                     'label' => 'Categories',
@@ -54,16 +54,16 @@ class View extends \yii\web\View
         'finance'   => [
             'icon'  => 'credit-card',
             'label' => 'Finance',
-            'url'   => '#',
+            'url'   => '/backend/payment/index',
             'items' => [
                 'payment/index' => [
                     'label' => 'Payments',
-                    'url'   => 'payment/index',
+                    'url'   => '/backend/payment/index',
                 ],
 
                 'expense/index'      => [
                     'label' => 'Expenses',
-                    'url'   => 'expense/index',
+                    'url'   => '/backend/expense/index',
                 ],
             ],
         ],
@@ -86,35 +86,35 @@ class View extends \yii\web\View
         'system'    => [
             'icon'  => 'gear',
             'label' => 'System',
-            'url'   => 'system/index',
+            'url'   => '/backend/system/configuration',
             'items' => [
                 'page/index'     => [
                     'label' => 'Pages',
-                    'url'   => 'page/index',
+                    'url'   => '/backend/page/index',
                 ],
                 'admin/index'     => [
                     'label' => 'Administrators',
-                    'url'   => 'admin/index',
+                    'url'   => '/backend/admin/index',
                 ],
                 'system/translation'   => [
                     'label' => 'UI Translation',
-                    'url'   => 'system/translation',
+                    'url'   => '/backend/system/translation',
                 ],
                 'system/logins'        => [
                     'label' => 'Login History',
-                    'url'   => 'system/logins',
+                    'url'   => '/backend/system/logins',
                 ],
                 'system/user-logs'     => [
                     'label' => 'User Logs',
-                    'url'   => 'system/user-logs',
+                    'url'   => '/backend/system/user-logs',
                 ],
                 'system/configuration' => [
                     'label' => 'Configuration',
-                    'url'   => 'system/configuration',
+                    'url'   => '/backend/system/configuration',
                 ],
                 'system/backup'        => [
                     'label' => 'Backups',
-                    'url'   => 'system/backup',
+                    'url'   => '/backend/system/backup',
                 ],
             ],
         ],

@@ -11,12 +11,15 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 
 
-<?php $form = ActiveForm::begin(['id' => 'login-form']); ?>
+<?php $form = ActiveForm::begin([
+    'id' => 'login-form',
+    'action' => '/backend/dashboard/login',
+]); ?>
 <div class="panel panel-primary panel-lg">
     <div class="panel-heading">
         <?= __('Admin Dashboard') ?>
         <div class="pull-right">
-            <?= Html::a('<span class="mdi-navigation-more-vert"></span>', ['dashboard/reset'], ['style' => 'color:rgba(255,255,255,.84)']) ?>
+            <?= Html::a('<span class="mdi-navigation-more-vert"></span>', ['/backend/dashboard/reset'], ['style' => 'color:rgba(255,255,255,.84)']) ?>
         </div>
     </div>
     <div class="panel-body">
@@ -33,7 +36,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
         <?= YII_DEBUG ? '' : $form->field($model, 'reCaptcha')->widget(
             \himiklab\yii2\recaptcha\ReCaptcha::className(),
-            []
+            ['siteKey' => '6Lcyp58sAAAAAGev9kp8L5eX16XGPT2GLEM8SIUH',]
         )->label(false) ?>
 
         <div class="row">

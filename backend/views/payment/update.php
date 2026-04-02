@@ -8,7 +8,7 @@ use common\models\payment\Payment;
  */
 
 $this->title                   = $model->amount . " ($model->user_data)";
-$this->params['breadcrumbs'][] = ['url' => ['payment/index'], 'label' => __('Manage Payments')];
+$this->params['breadcrumbs'][] = ['url' => ['/backend/payment/index'], 'label' => __('Manage Payments')];
 
 $this->params['breadcrumbs'][] = $this->title;
 ?>

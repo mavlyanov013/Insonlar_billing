@@ -27,19 +27,19 @@ use yii\widgets\Breadcrumbs;
         echo Nav::widget([
                              'options' => ['class' => 'navbar-nav navbar-right'],
                              'items'   => (Yii::$app->user->isGuest) ?
-                                 [['label' => 'Login', 'url' => ['dashboard/login']]] :
+                                 [['label' => 'Login', 'url' => ['/backend/dashboard/login']]] :
                                  [
                                      [
                                          'label' => Yii::$app->user->identity->fullname,
-                                         'url'   => ['dashboard/logout'],
+                                         'url'   => ['/backend/dashboard/logout'],
                                          'items' => [
                                              [
                                                  'label' => __('My Profile'),
-                                                 'url'   => ['dashboard/profile'],
+                                                 'url'   => ['/backend/dashboard/profile'],
                                              ],
                                              [
                                                  'label' => __('Logout'),
-                                                 'url'   => ['dashboard/logout'],
+                                                 'url'   => ['/backend/dashboard/logout'],
                                              ],
                                          ],
                                      ],

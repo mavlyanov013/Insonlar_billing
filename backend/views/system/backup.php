@@ -11,7 +11,7 @@ use yii\widgets\Pjax;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title                   = __('System Backups');
-$this->params['breadcrumbs'][] = ['url' => ['system/index'], 'label' => __('System')];
+$this->params['breadcrumbs'][] = ['url' => ['/backend/system/translation'], 'label' => __('System')];
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>
@@ -27,7 +27,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 </div>
 
                 <div class="col col-md-6 col-md-4 text-right">
-                    <a data-pjax="0" href="<?= Url::to(['system/snapshot']) ?>" class="btn btn-default"><i
+                    <a data-pjax="0" href="<?= Url::to(['/backend/system/snapshot']) ?>" class="btn btn-default"><i
                             class='fa fa-database'></i></a>
                 </div>
             </div>
@@ -48,7 +48,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                          'attribute' => 'name',
                                          'format'    => 'raw',
                                          'value'     => function ($data) {
-                                             return Html::a($data['name'], ['/system/backup', 'id' => $data['name']], ['data-pjax' => 0]);
+                                             return Html::a($data['name'], ['/backend/system/backup', 'id' => $data['name']], ['data-pjax' => 0]);
                                          },
                                      ],
 
@@ -62,7 +62,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                          'attribute' => 'action',
                                          'format'    => 'raw',
                                          'value'     => function ($data) {
-                                             return Html::a(__('Remove'), ['/system/backup', 'rem' => $data['name']], ['data-pjax' => 0]);
+                                             return Html::a(__('Remove'), ['/backend/system/backup', 'rem' => $data['name']], ['data-pjax' => 0]);
                                          },
                                      ]/*,
                                      [

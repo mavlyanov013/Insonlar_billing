@@ -15,7 +15,7 @@ use yii2mod\chosen\ChosenSelect;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title                   = __('System UI Translations');
-$this->params['breadcrumbs'][] = ['url' => ['system/index'], 'label' => __('System')];
+$this->params['breadcrumbs'][] = ['url' => ['/backend/system/translation'], 'label' => __('System')];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <?php Pjax::begin(['id' => 'translation-grid', 'timeout' => false, 'options' => ['data-pjax' => false], 'enablePushState' => false]) ?>
@@ -33,15 +33,15 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?= $form->field($searchModel, 'search', ['labelOptions' => ['class' => 'invisible']])->textInput(['autofocus' => true, 'placeholder' => $searchModel->getAttributeLabel('search')])->label(false) ?>
             </div>
             <?php ActiveForm::end(); ?>
-            <?php if ($this->_user()->canAccessToResource('system/upload-trans')): ?>
-                <?php $form = ActiveForm::begin(['action' => ['system/translation'], 'options' => ['id' => 'upload_form', 'method' => 'post', 'enctype' => 'multipart/form-data', 'data-pjax' => false]]); ?>
+            <?php if ($this->_user()->canAccessToResource('/backend/system/upload-trans')): ?>
+                <?php $form = ActiveForm::begin(['action' => ['/backend/system/translation'], 'options' => ['id' => 'upload_form', 'method' => 'post', 'enctype' => 'multipart/form-data', 'data-pjax' => false]]); ?>
                 <div class="col col-md-6 col-md-4 text-right">
                     <?php if (Config::isLatinCyrill()): ?>
                         <a onclick="return confirm('<?= htmlentities(__('Are you sure to transliterate all messages?')) ?>')"
-                           data-pjax="0" href="<?= Url::to(['system/translation', 'convert' => 1]) ?>"
+                           data-pjax="0" href="<?= Url::to(['/backend/system/translation', 'convert' => 1]) ?>"
                            class="btn btn-default"><i class='fa fa-refresh'></i></a>
                     <?php endif; ?>
-                    <a data-pjax="0" href="<?= Url::to(['system/download']) ?>" class="btn btn-default"><i
+                    <a data-pjax="0" href="<?= Url::to(['/backend/system/download']) ?>" class="btn btn-default"><i
                             class='fa fa-download'></i></a>
 
                     <div class="file-wrapper">
@@ -103,7 +103,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <script type="application/javascript">
 
     function showTranslation(id) {
-        $('#translation_body').load('<?=Url::to(["system/translate"])?>/' + id, function (data) {
+        $('#translation_body').load('<?=Url::to(["/backend/system/translate"])?>/' + id, function (data) {
             $('#modal_translation').modal('show');
             $('#delete-button').attr('trans-id', id);
         });
@@ -118,7 +118,7 @@ $this->params['breadcrumbs'][] = $this->title;
     function deleteTranslation() {
         if (confirm('<?=addslashes(__("Are you sure to delete message?"))?>')) {
             $.ajax(
-                '<?=Url::to(["system/delete"])?>/' + $('#delete-button').attr('trans-id'),
+                '<?=Url::to(["/backend/system/delete"])?>/' + $('#delete-button').attr('trans-id'),
                 {
                     method: 'GET',
                     success: function () {

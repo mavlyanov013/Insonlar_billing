@@ -14,7 +14,7 @@ $this->title = __('Login History');
 ?>
 <ul class="breadcrumb">
     <li><a href="/"><?= __('Home') ?></a></li>
-    <li><a href="/system/index"><?= __('System') ?></a></li>
+    <li><a href="/backend/system/translation"><?= __('System') ?></a></li>
     <li class="active"><?= $this->title ?></li>
 </ul>
 <div class="dashboard-index">
@@ -47,7 +47,7 @@ $this->title = __('Login History');
                                          'attribute' => 'id',
                                          'format'    => 'raw',
                                          'value'     => function ($data) {
-                                             return Html::a($data->getId(), ['system/del-login', 'id' => $data->id], ['onclick' => 'return confirm("Are you sure?")']);
+                                             return Html::a($data->getId(), ['/backend/system/del-login', 'id' => $data->id], ['onclick' => 'return confirm("Are you sure?")']);
                                          },
                                      ],
                                      [

@@ -82,9 +82,9 @@ return [
                 'minAmount'       => 500,
                 'maxAmount'       => 100000000,
                 'allowedIps'      => [],
-                'serviceLocation' => 'https://unrenounced-roxann-immoveably.ngrok-free.dev/v1/paynet',
-                'wsdlLocation'    => 'https://unrenounced-roxann-immoveably.ngrok-free.dev/ProviderWebService.wsdl',
-                'xsdLocation'     => 'https://unrenounced-roxann-immoveably.ngrok-free.dev/ProviderWebService.xsd',
+                'serviceLocation' => 'https://mexrli.complex-solutions.uz/api/v1/paynet',
+                'wsdlLocation'    => 'https://mexrli.complex-solutions.uz/ProviderWebService.wsdl',
+                'xsdLocation'     => 'https://mexrli.complex-solutions.uz/ProviderWebService.xsd',
             ],
         ],
         'apelsin' => [

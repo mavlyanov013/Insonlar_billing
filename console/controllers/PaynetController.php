@@ -44,7 +44,7 @@ class PaynetController extends Controller
             'encoding'           => 'UTF-8',
             'soap_version'       => SOAP_1_2,
         );
-        $this->client = new SoapClient('https://mexrli.complex-solutions.uz/ProviderWebService.wsdl', $options);
+        $this->client = new SoapClient('/var/www/insonlar/api/web/ProviderWebService.wsdl', $options);
 
         parent::init();
     }

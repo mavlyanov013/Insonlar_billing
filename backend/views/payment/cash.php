@@ -23,7 +23,7 @@ use yii2mod\chosen\ChosenSelect;
 
 
 $this->title                   = $model->isNewRecord ? __('Create Cash Payment') : ($model->transaction_id ? $model->transaction_id : $model->id);
-$this->params['breadcrumbs'][] = ['url' => ['payment/index'], 'label' => __('Manage Payments')];
+$this->params['breadcrumbs'][] = ['url' => ['/backend/payment/index'], 'label' => __('Manage Payments')];
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>

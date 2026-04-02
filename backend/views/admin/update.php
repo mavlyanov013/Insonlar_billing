@@ -9,8 +9,8 @@ use yii2mod\chosen\ChosenSelect;
 /* @var $model common\models\Admin */
 
 $this->title                   = __('Update Administrator');
-$this->params['breadcrumbs'][] = ['url' => ['system/index'], 'label' => __('System')];
-$this->params['breadcrumbs'][] = ['url' => ['admin/index'], 'label' => __('Manage Administrators')];
+$this->params['breadcrumbs'][] = ['url' => ['/backend/system/translation'], 'label' => __('System')];
+$this->params['breadcrumbs'][] = ['url' => ['/backend/admin/index'], 'label' => __('Manage Administrators')];
 $this->params['breadcrumbs'][] = $model->fullname;
 $user                          = $this->context->_user();
 ?>
@@ -61,7 +61,7 @@ $user                          = $this->context->_user();
             </div>
             <div class="panel-footer text-right">
                 <?php if ($user->canAccessToResource('admin/delete')): ?>
-                    <?= Html::a(__('Delete'), ['admin/delete', 'id' => $model->id], ['class' => 'btn btn-danger btn-delete']) ?>
+                    <?= Html::a(__('Delete'), ['/backend/admin/delete', 'id' => $model->id], ['class' => 'btn btn-danger btn-delete']) ?>
                 <?php endif; ?>
                 <?= Html::submitButton(__('Update'), ['class' => 'btn btn-primary ']) ?>
             </div>

@@ -10,11 +10,11 @@ use yii\widgets\Pjax;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title                   = __('Manage Administrators');
-$this->params['breadcrumbs'][] = ['url' => ['system/index'], 'label' => __('System')];
+$this->params['breadcrumbs'][] = ['url' => ['/backend/system/translation'], 'label' => __('System')];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="button-panel">
-    <a href="<?= Url::to(['admin/create']) ?>" class='btn btn-fab btn-raised btn-primary' data-pjax='0'>
+    <a href="<?= Url::to(['/backend/admin/create']) ?>" class='btn btn-fab btn-raised btn-primary' data-pjax='0'>
         <i class="fa fa-plus"></i>
     </a>
 </div>
@@ -43,14 +43,14 @@ $this->params['breadcrumbs'][] = $this->title;
                                          'attribute' => 'login',
                                          'format'    => 'raw',
                                          'value'     => function ($data) {
-                                             return Html::a($data->login, ['admin/update', 'id' => $data->id], ['data-pjax' => 0]);
+                                             return Html::a($data->login, ['/backend/admin/update', 'id' => $data->id], ['data-pjax' => 0]);
                                          },
                                      ],
                                      [
                                          'attribute' => 'fullname',
                                          'format'    => 'raw',
                                          'value'     => function ($data) {
-                                             return Html::a($data->fullname, ['admin/update', 'id' => $data->id], ['data-pjax' => 0]);
+                                             return Html::a($data->fullname, ['/backend/admin/update', 'id' => $data->id], ['data-pjax' => 0]);
                                          },
                                      ],
                                      'email',

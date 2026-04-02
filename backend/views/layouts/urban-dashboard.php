@@ -139,13 +139,11 @@ use yii\widgets\Breadcrumbs;
                 <ul class="nav navbar-nav navbar-right hidden-xs">
                     <?php foreach ($menu->items as $item): ?>
                         <li class="<?= $item['options']['class'] ?>">
-                            <a href="<?= Url::to($item['url']) ?>">
-                                <?= $item['label'] ?>
-                            </a>
+                            <a href="/backend/dashboard/index?language=uz">Uzbek</a>
                         </li>
                     <?php endforeach; ?>
                     <li>
-                        <a href="<?= Url::to(['system/cache']) ?>">
+                        <a href="<?= Url::to(['/backend/system/cache']) ?>">
                             <i class="fa fa-refresh"></i>
                         </a>
                     </li>
@@ -156,10 +154,10 @@ use yii\widgets\Breadcrumbs;
                         </a>
                         <ul class="dropdown-menu">
                             <li>
-                                <a href="<?= Url::to(['dashboard/profile']) ?>"><?= __('Profile') ?></a>
+                                <a href="<?= Url::to(['/backend/dashboard/profile']) ?>"><?= __('Profile') ?></a>
                             </li>
                             <li>
-                                <a href="<?= Url::to(['dashboard/logout']) ?>"><?= __('Logout') ?></a>
+                                <a href="<?= Url::to(['/backend/dashboard/logout']) ?>"><?= __('Logout') ?></a>
                             </li>
                         </ul>
 

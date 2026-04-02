@@ -40,12 +40,12 @@ class DashboardController extends BackendController
             if ($model->login()) {
                 $this->addSuccess(__('You have logged in successfully'));
 
-                return $this->goBack();
+                return $this->redirect(['/backend/dashboard/index']);
             } else {
                 $this->addError(__('Invalid Login or Password'));
             }
 
-            return $this->redirect('login');
+            return $this->redirect(['/backend/dashboard/login']);
         }
 
         return $this->render('login', [
@@ -71,7 +71,7 @@ class DashboardController extends BackendController
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             $this->addSuccess(__('Your profile updated successfully'));
 
-            return $this->redirect(['dashboard/profile']);
+            return $this->redirect(['/backend/dashboard/profile']);
         }
 
         return $this->render('profile', [
@@ -99,19 +99,16 @@ class DashboardController extends BackendController
         }
 
         if ($token) {
-            if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-                try {
-                    if ($model->resetAdminPassword($token)) {
-                        $this->addSuccess(__('Password changed successfully.'));
+            if ($model->load(Yii::$app->request->post())) {
+              if ($model->login()) {
+                  $this->addSuccess(__('You have logged in successfully'));
+                  return $this->goBack();
+              } else {
+                  $this->addError(__('Invalid Login or Password'));
+              }
 
-                        return $this->goHome();
-                    }
-                } catch (InvalidArgumentException $e) {
-                    $this->addError($e->getMessage());
-                }
-
-                return $this->redirect(['/backend/dashboard/login']);
-            }
+                  return $this->redirect(['/backend/dashboard/login']);
+              }
 
             return $this->render('resetPassword', [
                 'model' => $model,
@@ -125,7 +122,7 @@ class DashboardController extends BackendController
                 } else {
                     $this->addError(__('Sorry, we are unable to reset password for email provided.'));
                 }
-                return $this->redirect(['/dashboard/reset']);
+                return $this->redirect(['/backend/dashboard/reset']);
             }
 
             return $this->render('resetRequest', [

@@ -31,10 +31,10 @@ $this->registerJs("
 ?>
 <?php if (false): ?>
     <div class="button-panel">
-        <?= Html::a('<i class="fa fa-file-text"></i>', ['payment/transfer'], [
+        <?= Html::a('<i class="fa fa-file-text"></i>', ['/backend/payment/transfer'], [
             'data-pjax' => false, 'title' => __('Create Transfer', []), 'class' => 'btn btn-fab btn-raised btn-primary',
         ]) ?>
-        <?= Html::a('<i class="fa fa-money"></i>', ['payment/cash'], [
+        <?= Html::a('<i class="fa fa-money"></i>', ['/backend/payment/cash'], [
             'data-pjax' => false, 'title' => __('Create Cash', []), 'class' => 'btn btn-fab btn-raised btn-primary',
         ]) ?>
     </div>
@@ -86,7 +86,7 @@ $this->registerJs("
                 </div>
                 <?php if ($this->_user()->canAccessToResource('payment/download')): ?>
                     <div class="col col-sm-1 col-md-1">
-                        <a href="<?= Url::to(array_merge(['payment/download'], Yii::$app->request->get())) ?>"
+                        <a href="<?= Url::to(array_merge(['/backend/payment/download'], Yii::$app->request->get())) ?>"
                            class="btn btn-default btn-block"
                            target="_blank" data-pjax="0"><i class="fa fa-file-excel-o"></i> </a>
                     </div>
@@ -104,7 +104,7 @@ $this->registerJs("
                     'format'    => 'raw',
                     'value'     => function ($data) {
                         return Html::a($data->user_data ? $data->user_data : $data->transaction_id, [
-                            'payment/update',
+                            '/backend/payment/update',
                             'id' => $data->id,
                         ], ['data-pjax' => 0]);
                     },

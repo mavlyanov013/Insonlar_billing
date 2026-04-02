@@ -122,8 +122,8 @@ $config = [
         'reCaptcha'   => [
             'name'    => 'reCaptcha',
             'class'   => 'himiklab\yii2\recaptcha\ReCaptcha',
-            'siteKey' => '6LdIEV4UAAAAAKxtm5fleRpWXQEcQ6IfJBL9pIXg',
-            'secret'  => '6LdIEV4UAAAAAHwY0zx8cid1HFRpQ6AY488PsyQH',
+            'siteKey' => '6Lcyp58sAAAAAGev9kp8L5eX16XGPT2GLEM8SIUH',
+            'secret'  => '6Lcyp58sAAAAAMDRdCZvjrCSFZPRoUrLS3KawrGK',
 
         ],
     ],

@@ -9,8 +9,8 @@ use yii2mod\chosen\ChosenSelect;
 /* @var $model common\models\Admin */
 
 $this->title                   = __('Create Administrator');
-$this->params['breadcrumbs'][] = ['url' => ['system/index'], 'label' => __('System')];
-$this->params['breadcrumbs'][] = ['url' => ['admin/index'], 'label' => __('Manage Administrators')];
+$this->params['breadcrumbs'][] = ['url' => ['/backend/system/translation'], 'label' => __('System')];
+$this->params['breadcrumbs'][] = ['url' => ['/backend/admin/index'], 'label' => __('Manage Administrators')];
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>

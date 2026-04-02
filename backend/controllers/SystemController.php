@@ -43,7 +43,7 @@ class SystemController extends BackendController
                 } else {
                     $this->addError(__('You cannot delete backups after a week'));
                 }
-                return $this->redirect('backup');
+                return $this->redirect(['/backend/system/backup']);
             }
         }
         $data = [];
@@ -137,7 +137,7 @@ class SystemController extends BackendController
             if ($count) {
                 $this->addSuccess(__('{count} messages transliterated successfully', ['count' => $count]));
             }
-            return $this->redirect(['system/translation']);
+            return $this->redirect(['/backend/system/translation']);
         }
 
         return $this->render('translation', [
@@ -214,7 +214,7 @@ class SystemController extends BackendController
         chdir($old_path);
 
 
-        return $this->redirect(['system/backup']);
+        return $this->redirect(['/backend/system/backup']);
     }
 
     /**
@@ -241,7 +241,7 @@ class SystemController extends BackendController
         }
 
         $this->addSuccess(__('System cache cleared successfully'));
-        return $this->redirect(Yii::$app->request->getReferrer() ?: ['dashboard/index']);
+        return $this->redirect(Yii::$app->request->getReferrer() ?: ['/backend/dashboard/index']);
     }
 
 

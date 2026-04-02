@@ -12,7 +12,10 @@ $this->params['breadcrumbs'][] = $model->fullname;
 
 ?>
 
-<?php $form = ActiveForm::begin(['enableAjaxValidation' => true,]); ?>
+<?php $form = ActiveForm::begin([
+    'enableAjaxValidation' => true,
+    'action' => '/backend/dashboard/profile',
+]); ?>
 <div class="row">
     <div class="col col-md-6">
         <div class="panel panel-primary">

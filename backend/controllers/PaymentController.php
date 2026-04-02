@@ -112,10 +112,12 @@ class PaymentController extends BackendController
          * @var $model Payment
          */
         $searchModel = new Payment(['scenario' => 'search']);
+	$dataProvider = $searchModel->search($this->get());
+    	$dataProvider->pagination->route = '/backend/payment/index';
 
 
         return $this->render('index', [
-            'dataProvider' => $searchModel->search($this->get()),
+            'dataProvider' => $dataProvider,
             'searchModel'  => $searchModel,
         ]);
     }
@@ -224,7 +226,7 @@ class PaymentController extends BackendController
         }
 
 
-        return $this->redirect(['payment/update', 'id' => $model->id]);
+        return $this->redirect(['/backend/payment/update', 'id' => $model->id]);
     }
 
     /**

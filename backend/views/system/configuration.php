@@ -9,7 +9,7 @@ use yii\widgets\ActiveForm;
 /* @var $model common\models\Admin */
 
 $this->title = __('System Configuration');
-$this->params['breadcrumbs'][] = ['url' => ['system/index'], 'label' => __('System')];
+$this->params['breadcrumbs'][] = ['url' => ['/backend/system/translation'], 'label' => __('System')];
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>
