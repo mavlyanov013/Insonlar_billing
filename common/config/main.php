@@ -126,6 +126,11 @@ $config = [
             'secret'  => '6Lcyp58sAAAAAMDRdCZvjrCSFZPRoUrLS3KawrGK',
 
         ],
+        'telegram' => [
+            'class' => 'common\components\TelegramService',
+            'botToken' => '8579026763:AAG_Txa-efaNtBQbXxKwUq-jQgy3sdFRJ5c',
+            'chatId' => '-100XXXXXXXXXX',
+        ],
     ],
     'params'     => $params,
 ];
