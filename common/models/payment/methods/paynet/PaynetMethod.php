@@ -159,13 +159,13 @@ class PaynetMethod
 
                                 $parameters[] = $parameter;
 
-                                try {
-                                    if (isset(\Yii::$app->telegram)) {
-                                        \Yii::$app->telegram->sendPaymentNotification($transaction);
-                                    }
-                                } catch (\Throwable $e) {
-                                    \Yii::error('Telegram send error: ' . $e->getMessage(), 'telegram');
-                                }
+//                                try {
+//                                    if (isset(\Yii::$app->telegram)) {
+////                                        \Yii::$app->telegram->sendPaymentNotification($transaction);
+//                                    }
+//                                } catch (\Throwable $e) {
+//                                    \Yii::error('Telegram send error: ' . $e->getMessage(), 'telegram');
+//                                }
                             } else {
                                 $this->status = self::STATUS_SYSTEM_ERROR;
                             }
