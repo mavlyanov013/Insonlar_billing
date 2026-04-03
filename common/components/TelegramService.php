@@ -2,14 +2,18 @@
 
 namespace common\components;
 
-use common\models\payment\Payment;
 use Mpdf\Mpdf;
 use Yii;
 
 class TelegramService
 {
     public $botToken;
-    public $chatId;
+    public $chatIds = [];
+
+    protected function getChatIds()
+    {
+        return array_values(array_filter((array)$this->chatIds));
+    }
 
     protected function callTelegram($method, $postFields = [])
     {
@@ -39,116 +43,77 @@ class TelegramService
         return $result;
     }
 
-    public function sendMessage($text)
+    public function sendMessageToAll($text)
     {
-        if (!$this->chatId || !$text) {
-            return false;
+        foreach ($this->getChatIds() as $chatId) {
+            $this->callTelegram('sendMessage', [
+                'chat_id' => $chatId,
+                'text' => $text,
+                'parse_mode' => 'HTML',
+            ]);
         }
-
-        return $this->callTelegram('sendMessage', [
-            'chat_id' => $this->chatId,
-            'text' => $text,
-            'parse_mode' => 'HTML',
-        ]);
     }
 
-    public function sendPhoto($photoPath, $caption = null)
+    public function sendPhotoToAll($photoPath, $caption = null)
     {
-        if (!$this->chatId || !$photoPath || !file_exists($photoPath)) {
-            return false;
+        if (!file_exists($photoPath)) {
+            Yii::error('telegram: photo not found: ' . $photoPath, 'telegram');
+            return;
         }
 
-        $postFields = [
-            'chat_id' => $this->chatId,
-            'photo' => new \CURLFile($photoPath),
-            'parse_mode' => 'HTML',
-        ];
+        foreach ($this->getChatIds() as $chatId) {
+            $postFields = [
+                'chat_id' => $chatId,
+                'photo' => new \CURLFile($photoPath),
+                'parse_mode' => 'HTML',
+            ];
 
-        if ($caption) {
-            $postFields['caption'] = $caption;
+            if ($caption) {
+                $postFields['caption'] = $caption;
+            }
+
+            $this->callTelegram('sendPhoto', $postFields);
         }
-
-        return $this->callTelegram('sendPhoto', $postFields);
     }
 
-    public function sendDocument($documentPath, $caption = null)
+    public function sendDocumentToAll($documentPath, $caption = null)
     {
-        if (!$this->chatId || !$documentPath || !file_exists($documentPath)) {
-            return false;
+        if (!file_exists($documentPath)) {
+            Yii::error('telegram: document not found: ' . $documentPath, 'telegram');
+            return;
         }
 
-        $postFields = [
-            'chat_id' => $this->chatId,
-            'document' => new \CURLFile($documentPath),
-            'parse_mode' => 'HTML',
-        ];
+        foreach ($this->getChatIds() as $chatId) {
+            $postFields = [
+                'chat_id' => $chatId,
+                'document' => new \CURLFile($documentPath),
+                'parse_mode' => 'HTML',
+            ];
 
-        if ($caption) {
-            $postFields['caption'] = $caption;
+            if ($caption) {
+                $postFields['caption'] = $caption;
+            }
+
+            $this->callTelegram('sendDocument', $postFields);
         }
-
-        return $this->callTelegram('sendDocument', $postFields);
     }
 
-    public function sendPaymentNotification(Payment $payment)
+    protected function centerText($image, $text, $fontPath, $fontSize, $y, $color)
     {
-        $amount = number_format((float)$payment->amount, 0, '.', ' ');
-        $date = date('d-m-Y H:i:s', (int)($payment->time / 1000));
-        $transactionId = (string)$payment->transaction_id;
-        $method = strtoupper((string)$payment->method);
-        $localId = (string)$payment->local_id;
-        $category = (string)$payment->category;
-        $userData = trim((string)$payment->user_data);
+        $box = imagettfbbox($fontSize, 0, $fontPath, $text);
+        $textWidth = $box[2] - $box[0];
+        $imageWidth = imagesx($image);
+        $x = (int)(($imageWidth - $textWidth) / 2);
 
-        $baseDir = Yii::getAlias('@common/../runtime/telegram-payments');
-        if (!is_dir($baseDir)) {
-            mkdir($baseDir, 0777, true);
-        }
-
-        $imagePath = $baseDir . '/payment-' . $transactionId . '.jpg';
-        $pdfPath   = $baseDir . '/payment-' . $transactionId . '.pdf';
-
-        $photoCaption = "💚 <b>Yangi xayriya tushdi</b>\n"
-            . "💰 <b>Summa:</b> {$amount} so'm\n"
-            . "💳 <b>To'lov turi:</b> {$method}\n"
-            . "🕒 <b>Vaqt:</b> {$date}";
-
-        $docCaption = "Mexrli insonlar safida bo'ling:\n👉 PAYME | CLICK | APELSIN";
-
-        $imageGenerated = $this->generatePaymentImage($imagePath, [
-            'amount' => $amount,
-            'date' => $date,
-        ]);
-
-        if ($imageGenerated && file_exists($imagePath)) {
-            $this->sendPhoto($imagePath, $photoCaption);
-        } else {
-            $this->sendMessage($photoCaption);
-        }
-
-        $this->generatePaymentPdf($pdfPath, [
-            'amount' => $amount,
-            'date' => $date,
-            'transactionId' => $transactionId,
-            'method' => $method,
-            'localId' => $localId,
-            'category' => $category,
-            'userData' => $userData,
-        ]);
-
-        if (file_exists($pdfPath)) {
-            $this->sendDocument($pdfPath, $docCaption);
-        }
-
-        return true;
+        imagettftext($image, $fontSize, 0, $x, $y, $color, $fontPath, $text);
     }
 
-    protected function generatePaymentImage($outputPath, array $data)
+    protected function generateSummaryImage($outputPath, array $data)
     {
-        $templatePath = \Yii::getAlias('@common/assets/payment-template.jpg');
+        $templatePath = Yii::getAlias('@common/assets/payment-template.jpg');
 
         if (!file_exists($templatePath)) {
-            Yii::error('Telegram template not found: ' . $templatePath, 'telegram');
+            Yii::error('telegram: template not found: ' . $templatePath, 'telegram');
             return false;
         }
 
@@ -156,128 +121,72 @@ class TelegramService
         $font = '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf';
 
         if (!file_exists($fontBold) || !file_exists($font)) {
-            Yii::error('Telegram font file not found', 'telegram');
+            Yii::error('telegram: font not found', 'telegram');
             return false;
         }
 
-        $image = imagecreatefromjpeg($templatePath);
+        $imageInfo = getimagesize($templatePath);
+        if (!$imageInfo || empty($imageInfo['mime'])) {
+            Yii::error('telegram: unsupported template file', 'telegram');
+            return false;
+        }
+
+        if ($imageInfo['mime'] === 'image/png') {
+            $image = imagecreatefrompng($templatePath);
+        } elseif ($imageInfo['mime'] === 'image/jpeg') {
+            $image = imagecreatefromjpeg($templatePath);
+        } else {
+            Yii::error('telegram: unsupported template mime: ' . $imageInfo['mime'], 'telegram');
+            return false;
+        }
 
         if (!$image) {
-            Yii::error('Failed to open template image: ' . $templatePath, 'telegram');
+            Yii::error('telegram: image open failed', 'telegram');
             return false;
         }
 
         $blue  = imagecolorallocate($image, 0, 115, 201);
-        $black = imagecolorallocate($image, 40, 40, 40);
+        $black = imagecolorallocate($image, 55, 55, 55);
+        $gray  = imagecolorallocate($image, 110, 110, 110);
 
-        imagettftext($image, 48, 0, 250, 600, $blue, $fontBold, $data['amount']);
-        imagettftext($image, 28, 0, 220, 700, $black, $font, "so'm xayriya qilindi");
-        imagettftext($image, 20, 0, 300, 900, $black, $font, $data['date']);
+        // template bo'sh bo'lishi kerak
+        $this->centerText($image, 'Bugun', $font, 34, 360, $gray);
+        $this->centerText($image, $data['amount'], $fontBold, 78, 520, $blue);
+        $this->centerText($image, "so'm xayriya qilindi", $font, 30, 650, $black);
+        $this->centerText($image, $data['date'], $font, 24, 1320, $gray);
 
         imagejpeg($image, $outputPath, 95);
         imagedestroy($image);
 
-        if (!file_exists($outputPath)) {
-            Yii::error('Telegram image not created: ' . $outputPath, 'telegram');
-            return false;
-        }
-
-        return true;
+        return file_exists($outputPath);
     }
 
-    protected function generatePaymentPdf($outputPath, array $data)
+    protected function generateSummaryPdf($outputPath, array $data)
     {
         $html = '
         <html>
         <head>
             <meta charset="utf-8">
             <style>
-                body {
-                    font-family: sans-serif;
-                    color: #222;
-                    font-size: 14px;
-                }
-                .wrapper {
-                    border: 1px solid #d9d9d9;
-                    padding: 24px;
-                }
-                .title {
-                    font-size: 22px;
-                    font-weight: bold;
-                    color: #0b74c9;
-                    margin-bottom: 10px;
-                }
-                .subtitle {
-                    font-size: 14px;
-                    color: #666;
-                    margin-bottom: 25px;
-                }
-                table {
-                    width: 100%;
-                    border-collapse: collapse;
-                    margin-top: 10px;
-                }
-                td {
-                    padding: 10px 8px;
-                    border-bottom: 1px solid #e5e5e5;
-                    vertical-align: top;
-                }
-                .label {
-                    width: 220px;
-                    font-weight: bold;
-                    background: #f8f8f8;
-                }
-                .footer {
-                    margin-top: 30px;
-                    font-size: 13px;
-                    color: #555;
-                }
-                .links {
-                    margin-top: 8px;
-                    font-weight: bold;
-                    color: #0b74c9;
-                }
+                body { font-family: sans-serif; color: #222; font-size: 14px; }
+                .wrapper { border: 1px solid #d9d9d9; padding: 24px; }
+                .title { font-size: 22px; font-weight: bold; color: #0b74c9; margin-bottom: 12px; }
+                table { width: 100%; border-collapse: collapse; }
+                td { padding: 10px 8px; border-bottom: 1px solid #e5e5e5; }
+                .label { width: 220px; font-weight: bold; background: #f8f8f8; }
+                .footer { margin-top: 30px; font-size: 13px; color: #555; }
             </style>
         </head>
         <body>
             <div class="wrapper">
-                <div class="title">Mehrli insonlar - To\'lov ma\'lumoti</div>
-                <div class="subtitle">Xayriya to\'lovi muvaffaqiyatli qabul qilindi</div>
-
+                <div class="title">Mehrli insonlar - 3 soatlik hisobot</div>
                 <table>
-                    <tr>
-                        <td class="label">Summa</td>
-                        <td>' . htmlspecialchars($data['amount']) . ' so\'m</td>
-                    </tr>
-                    <tr>
-                        <td class="label">To\'lov turi</td>
-                        <td>' . htmlspecialchars($data['method']) . '</td>
-                    </tr>
-                    <tr>
-                        <td class="label">Transaction ID</td>
-                        <td>' . htmlspecialchars($data['transactionId']) . '</td>
-                    </tr>
-                    <tr>
-                        <td class="label">Local ID</td>
-                        <td>' . htmlspecialchars($data['localId']) . '</td>
-                    </tr>
-                    <tr>
-                        <td class="label">Kategoriya</td>
-                        <td>' . htmlspecialchars($data['category']) . '</td>
-                    </tr>
-                    <tr>
-                        <td class="label">User</td>
-                        <td>' . htmlspecialchars($data['userData']) . '</td>
-                    </tr>
-                    <tr>
-                        <td class="label">Sana</td>
-                        <td>' . htmlspecialchars($data['date']) . '</td>
-                    </tr>
+                    <tr><td class="label">Bugungi jami summa</td><td>' . htmlspecialchars($data['amount']) . ' so\'m</td></tr>
+                    <tr><td class="label">Hisobot vaqti</td><td>' . htmlspecialchars($data['date']) . '</td></tr>
+                    <tr><td class="label">Interval</td><td>Har 3 soatda, bugungi cumulative total</td></tr>
                 </table>
-
                 <div class="footer">
-                    Mehrli insonlar safida bo\'ling:
-                    <div class="links">PAYME | CLICK | APELSIN</div>
+                    Mehrli insonlar safida bo\'ling: PAYME | CLICK | APELSIN
                 </div>
             </div>
         </body>
@@ -294,5 +203,45 @@ class TelegramService
 
         $mpdf->WriteHTML($html);
         $mpdf->Output($outputPath, \Mpdf\Output\Destination::FILE);
+    }
+
+    public function sendDailySummary($amount, $date)
+    {
+        $amount = number_format((float)$amount, 0, '.', ' ');
+
+        $baseDir = Yii::getAlias('@common/../runtime/telegram-payments');
+        if (!is_dir($baseDir)) {
+            mkdir($baseDir, 0777, true);
+        }
+
+        $key = date('Ymd_His');
+        $imagePath = $baseDir . '/summary-' . $key . '.jpg';
+        $pdfPath = $baseDir . '/summary-' . $key . '.pdf';
+
+        $this->generateSummaryImage($imagePath, [
+            'amount' => $amount,
+            'date' => $date,
+        ]);
+
+        $this->generateSummaryPdf($pdfPath, [
+            'amount' => $amount,
+            'date' => $date,
+        ]);
+
+        $caption = "💚 <b>Bugungi jami xayriya</b>\n"
+            . "💰 <b>Summa:</b> {$amount} so'm\n"
+            . "🕒 <b>Vaqt:</b> {$date}";
+
+        $docCaption = "Mexrli insonlar safida bo'ling:\n👉 PAYME | CLICK | APELSIN";
+
+        if (file_exists($imagePath)) {
+            $this->sendPhotoToAll($imagePath, $caption);
+        } else {
+            $this->sendMessageToAll($caption);
+        }
+
+        if (file_exists($pdfPath)) {
+            $this->sendDocumentToAll($pdfPath, $docCaption);
+        }
     }
 }
