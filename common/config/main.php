@@ -129,10 +129,10 @@ $config = [
         'telegram' => [
             'class' => 'common\components\TelegramService',
             'botToken' => '8579026763:AAG_Txa-efaNtBQbXxKwUq-jQgy3sdFRJ5c',
-            'chatId' => [
-                '-5109769407',
-                '',
-                ]
+            'chatIds' => [
+      		  '-1002915059602',
+	          '-1003143792786',
+    		],
         ],
     ],
     'params'     => $params,

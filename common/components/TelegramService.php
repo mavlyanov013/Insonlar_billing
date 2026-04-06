@@ -109,101 +109,255 @@ class TelegramService
     }
 
     protected function generateSummaryImage($outputPath, array $data)
-    {
-        $templatePath = Yii::getAlias('@common/assets/payment-template.jpg');
+{
+    $templatePath = Yii::getAlias('@common/assets/payment-template.jpg');
 
-        if (!file_exists($templatePath)) {
-            Yii::error('telegram: template not found: ' . $templatePath, 'telegram');
-            return false;
-        }
-
-        $fontBold = '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf';
-        $font = '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf';
-
-        if (!file_exists($fontBold) || !file_exists($font)) {
-            Yii::error('telegram: font not found', 'telegram');
-            return false;
-        }
-
-        $imageInfo = getimagesize($templatePath);
-        if (!$imageInfo || empty($imageInfo['mime'])) {
-            Yii::error('telegram: unsupported template file', 'telegram');
-            return false;
-        }
-
-        if ($imageInfo['mime'] === 'image/png') {
-            $image = imagecreatefrompng($templatePath);
-        } elseif ($imageInfo['mime'] === 'image/jpeg') {
-            $image = imagecreatefromjpeg($templatePath);
-        } else {
-            Yii::error('telegram: unsupported template mime: ' . $imageInfo['mime'], 'telegram');
-            return false;
-        }
-
-        if (!$image) {
-            Yii::error('telegram: image open failed', 'telegram');
-            return false;
-        }
-
-        $blue  = imagecolorallocate($image, 0, 115, 201);
-        $black = imagecolorallocate($image, 55, 55, 55);
-        $gray  = imagecolorallocate($image, 110, 110, 110);
-
-        // template bo'sh bo'lishi kerak
-        $this->centerText($image, 'Bugun', $font, 34, 360, $gray);
-        $this->centerText($image, $data['amount'], $fontBold, 78, 520, $blue);
-        $this->centerText($image, "so'm xayriya qilindi", $font, 30, 650, $black);
-        $this->centerText($image, $data['date'], $font, 24, 1320, $gray);
-
-        imagejpeg($image, $outputPath, 95);
-        imagedestroy($image);
-
-        return file_exists($outputPath);
+    if (!file_exists($templatePath)) {
+        Yii::error('telegram: template not found: ' . $templatePath, 'telegram');
+        return false;
     }
+
+    $fontBold = '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf';
+    $font = '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf';
+
+    if (!file_exists($fontBold) || !file_exists($font)) {
+        Yii::error('telegram: font not found', 'telegram');
+        return false;
+    }
+
+    $imageInfo = getimagesize($templatePath);
+    if (!$imageInfo || empty($imageInfo['mime'])) {
+        Yii::error('telegram: unsupported template file', 'telegram');
+        return false;
+    }
+
+    if ($imageInfo['mime'] === 'image/png') {
+        $image = imagecreatefrompng($templatePath);
+    } elseif ($imageInfo['mime'] === 'image/jpeg') {
+        $image = imagecreatefromjpeg($templatePath);
+    } else {
+        Yii::error('telegram: unsupported template mime: ' . $imageInfo['mime'], 'telegram');
+        return false;
+    }
+
+    if (!$image) {
+        Yii::error('telegram: image open failed', 'telegram');
+        return false;
+    }
+
+    $blue = imagecolorallocate($image, 0, 115, 201);
+    $gray = imagecolorallocate($image, 95, 95, 95);
+
+    // Faqat summa va sana yoziladi.
+    $amountText = $data['amount'];
+    $dateText = $data['date'];
+
+    // --- SUMMA ---
+    $amountFontSize = 86;
+    $amountBox = imagettfbbox($amountFontSize, 0, $fontBold, $amountText);
+    $amountWidth = $amountBox[2] - $amountBox[0];
+    $amountX = (imagesx($image) - $amountWidth) / 2;
+    $amountY = 900;
+
+    imagettftext($image, $amountFontSize, 0, (int)$amountX, $amountY, $blue, $fontBold, $amountText);
+
+    // --- SANA ---
+    $dateFontSize = 24;
+    $dateBox = imagettfbbox($dateFontSize, 0, $font, $dateText);
+    $dateWidth = $dateBox[2] - $dateBox[0];
+    $dateX = (imagesx($image) - $dateWidth) / 2;
+    $dateY = 1335;
+
+    imagettftext($image, $dateFontSize, 0, (int)$dateX, $dateY, $gray, $font, $dateText);
+
+    imagejpeg($image, $outputPath, 100);
+    imagedestroy($image);
+
+    return file_exists($outputPath);
+}
 
     protected function generateSummaryPdf($outputPath, array $data)
-    {
-        $html = '
-        <html>
-        <head>
-            <meta charset="utf-8">
-            <style>
-                body { font-family: sans-serif; color: #222; font-size: 14px; }
-                .wrapper { border: 1px solid #d9d9d9; padding: 24px; }
-                .title { font-size: 22px; font-weight: bold; color: #0b74c9; margin-bottom: 12px; }
-                table { width: 100%; border-collapse: collapse; }
-                td { padding: 10px 8px; border-bottom: 1px solid #e5e5e5; }
-                .label { width: 220px; font-weight: bold; background: #f8f8f8; }
-                .footer { margin-top: 30px; font-size: 13px; color: #555; }
-            </style>
-        </head>
-        <body>
-            <div class="wrapper">
-                <div class="title">Mehrli insonlar - 3 soatlik hisobot</div>
-                <table>
-                    <tr><td class="label">Bugungi jami summa</td><td>' . htmlspecialchars($data['amount']) . ' so\'m</td></tr>
-                    <tr><td class="label">Hisobot vaqti</td><td>' . htmlspecialchars($data['date']) . '</td></tr>
-                    <tr><td class="label">Interval</td><td>Har 3 soatda, bugungi cumulative total</td></tr>
-                </table>
-                <div class="footer">
-                    Mehrli insonlar safida bo\'ling: PAYME | CLICK | APELSIN
-                </div>
-            </div>
-        </body>
-        </html>';
+{
+    $payments = isset($data['payments']) ? $data['payments'] : [];
 
-        $mpdf = new Mpdf([
-            'mode' => 'utf-8',
-            'format' => 'A4',
-            'margin_top' => 12,
-            'margin_bottom' => 12,
-            'margin_left' => 12,
-            'margin_right' => 12,
-        ]);
+    $rows = '';
+    $i = 1;
+    foreach ($payments as $payment) {
+        $amount = number_format((float)$payment->amount, 0, '.', ' ');
+        $method = strtoupper((string)$payment->method);
 
-        $mpdf->WriteHTML($html);
-        $mpdf->Output($outputPath, \Mpdf\Output\Destination::FILE);
+        $time = '';
+        if (!empty($payment->time)) {
+            $time = date('H:i:s', ((int)$payment->time) / 1000);
+        }
+
+        $comment = '';
+        if (!empty($payment->user_data)) {
+            $comment = htmlspecialchars((string)$payment->user_data, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        } elseif (!empty($payment->transaction_id)) {
+            $comment = htmlspecialchars((string)$payment->transaction_id, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        }
+
+        $rows .= '
+            <tr>
+                <td class="center">' . $i . '</td>
+                <td class="right">' . $amount . '</td>
+                <td class="center">' . $method . '</td>
+                <td class="center">' . $time . '</td>
+                <td>' . $comment . '</td>
+            </tr>
+        ';
+        $i++;
     }
+
+    if ($rows === '') {
+        $rows = '
+            <tr>
+                <td colspan="5" class="center">Buguncha to\'lovlar topilmadi</td>
+            </tr>
+        ';
+    }
+
+    $html = '
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <style>
+            body {
+                font-family: dejavusans;
+                font-size: 12px;
+                color: #222;
+            }
+
+            .header {
+                width: 100%;
+                margin-bottom: 12px;
+            }
+
+            .title-left {
+                font-weight: bold;
+                font-size: 14px;
+            }
+
+            .title-right {
+                text-align: right;
+                font-size: 12px;
+                font-weight: bold;
+            }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 8px;
+            }
+
+            th, td {
+                border: 1px solid #cfcfcf;
+                padding: 7px 8px;
+                font-size: 11px;
+                vertical-align: middle;
+            }
+
+            th {
+                background: #efefef;
+                font-weight: bold;
+                text-align: center;
+            }
+
+            .center {
+                text-align: center;
+            }
+
+            .right {
+                text-align: right;
+            }
+
+            .summary {
+                margin-top: 14px;
+                font-size: 13px;
+            }
+
+            .summary b {
+                font-weight: bold;
+            }
+
+            .links {
+                margin-top: 16px;
+                font-size: 12px;
+                line-height: 1.8;
+            }
+
+            .links a {
+                color: #1a5fd0;
+                text-decoration: underline;
+            }
+
+            .footer {
+                margin-top: 30px;
+                text-align: center;
+                font-size: 11px;
+                color: #666;
+            }
+        </style>
+    </head>
+    <body>
+        <table class="header" cellpadding="0" cellspacing="0" border="0">
+            <tr>
+                <td class="title-left">Mehrli insonlar</td>
+                <td class="title-right">Sana: ' . htmlspecialchars($data['date']) . '</td>
+            </tr>
+        </table>
+
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 40px;">№</th>
+                    <th style="width: 110px;">Summa</th>
+                    <th style="width: 90px;">Turi</th>
+                    <th style="width: 90px;">Vaqt</th>
+                    <th>Izoh</th>
+                </tr>
+            </thead>
+            <tbody>
+                ' . $rows . '
+            </tbody>
+        </table>
+
+        <div class="summary">
+            ' . htmlspecialchars($data['date']) . ' ga qadar kunlik jami tushum:
+            <b>' . htmlspecialchars($data['amount']) . ' so\'m</b>
+        </div>
+
+        <div class="links">
+            "Muhtoj Bolajon" guruhiga a\'zo bo\'ling:
+            <a href="https://t.me/mehrli_bolajon">@mehrli_bolajon</a><br>
+
+            "Mehrli Insonlar" guruhiga a\'zo bo\'ling:
+            <a href="https://t.me/mehrli_insonlar">@mehrli_insonlar</a><br><br>
+
+            To\'lov qilish:
+            <a href="https://payme.uz/fallback/merchant/?id=65897b594de4489c5e278a0f">PAYME</a> |
+            <a href="https://my.click.uz/services/pay/?service_id=31218">CLICK</a> |
+            <a href="https://www.apelsin.uz/open-service?serviceId=12030307">APELSIN</a> |
+            <a href="https://app.paynet.uz/?m=4590">PAYNET</a>
+        </div>
+
+        <div class="footer">1-sahifa</div>
+    </body>
+    </html>';
+
+    $mpdf = new \Mpdf\Mpdf([
+        'mode' => 'utf-8',
+        'format' => 'A4',
+        'margin_top' => 12,
+        'margin_bottom' => 12,
+        'margin_left' => 12,
+        'margin_right' => 12,
+    ]);
+
+    $mpdf->WriteHTML($html);
+    $mpdf->Output($outputPath, \Mpdf\Output\Destination::FILE);
+}
 
     public function sendDailySummary($amount, $date)
     {
@@ -226,13 +380,18 @@ class TelegramService
         $this->generateSummaryPdf($pdfPath, [
             'amount' => $amount,
             'date' => $date,
+	    'payments' => $this->getTodayPayments(),
         ]);
 
         $caption = "💚 <b>Bugungi jami xayriya</b>\n"
             . "💰 <b>Summa:</b> {$amount} so'm\n"
             . "🕒 <b>Vaqt:</b> {$date}";
 
-        $docCaption = "Mexrli insonlar safida bo'ling:\n👉 PAYME | CLICK | APELSIN";
+        $docCaption = "Mexrli insonlar safida bo'ling:\n"
+    	. "👉 <a href='https://payme.uz/fallback/merchant/?id=65897b594de4489c5e278a0f'>PAYME</a> | "
+    	. "<a href='https://my.click.uz/services/pay/?service_id=31218'>CLICK</a> | "
+    	. "<a href='https://www.apelsin.uz/open-service?serviceId=12030307'>UZUMBANK</a> | "
+    	. "<a href='https://app.paynet.uz/?m=4590'>PAYNET</a>";
 
         if (file_exists($imagePath)) {
             $this->sendPhotoToAll($imagePath, $caption);
@@ -244,4 +403,21 @@ class TelegramService
             $this->sendDocumentToAll($pdfPath, $docCaption);
         }
     }
+    protected function getTodayPayments()
+	{
+    	$today = new \DateTime('today', new \DateTimeZone('Asia/Tashkent'));
+    	$from = $today->getTimestamp() * 1000;
+    	$to = time() * 1000;
+
+    	return \common\models\payment\Payment::find()
+        	->where([
+            	'time' => [
+                	'$gte' => $from,
+                	'$lte' => $to,
+            	],
+            	'status' => 'success',
+        	])
+        	->orderBy(['time' => SORT_ASC])
+        	->all();
+	}
 }

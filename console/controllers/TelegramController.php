@@ -30,17 +30,16 @@ class TelegramController extends Controller
         $to = $now * 1000;
 
         $sum = (new Query())
-            ->from(Payment::collectionName())
-            ->where([
-                'time' => [
-                    '$gte' => $from,
-                    '$lte' => $to,
-                ],
-                'status' => ['$eq' => Payment::STATUS_SUCCESS],
-            ])
-            ->sum('amount', Yii::$app->mongodb->getDatabase());
-
-        $sum = $sum ? $sum : 0;
+    	->from(Payment::collectionName())
+    	->where([
+        	'time' => [
+	            	'$gte' => $from,
+        	    	'$lte' => $to,
+        	],
+        	'status' => 'success',
+    	])
+    	->sum('amount', Yii::$app->mongodb->getDatabase());
+        	$sum = $sum ? $sum : 0;
 
         if ($sum > 0) {
             Yii::$app->telegram->sendDailySummary($sum, date('d-m-Y H:i:s', $now));
@@ -50,4 +49,18 @@ class TelegramController extends Controller
             echo "No payments today.\n";
         }
     }
+	public function actionDebugPayments()
+	{
+    	$payments = \common\models\payment\Payment::find()
+        	->orderBy(['_id' => SORT_DESC])
+        	->limit(5)
+        	->all();
+
+    	foreach ($payments as $p) {
+        	echo "AMOUNT: ".$p->amount.PHP_EOL;
+        	echo "STATUS: ".$p->status.PHP_EOL;
+        	echo "TIME: ".$p->time.PHP_EOL;
+        	echo "------------------".PHP_EOL;
+    }
+}
 }

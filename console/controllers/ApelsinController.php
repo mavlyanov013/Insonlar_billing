@@ -28,7 +28,7 @@ class ApelsinController extends Controller
      */
     private $client;
 
-    public function init()
+  /**  public function init()
     {
         ini_set("soap.wsdl_cache_enabled", "0");
         ini_set('soap.wsdl_cache_ttl', '0');
@@ -44,6 +44,7 @@ class ApelsinController extends Controller
 
         parent::init();
     }
+*/
 
     public function actionGetInformation()
     {

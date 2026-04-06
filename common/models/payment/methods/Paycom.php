@@ -5,6 +5,7 @@ namespace common\models\payment\methods;
 use common\models\Order;
 use common\models\payment\Method;
 use common\models\payment\Payment;
+use common\models\payment\methods\Paycom;
 use common\models\User;
 use Yii;
 use yii\base\Model;

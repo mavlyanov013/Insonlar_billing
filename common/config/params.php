@@ -13,23 +13,24 @@ return [
     'supportEmail'                   => 'support@uzvisit.com',
     'user.passwordResetTokenExpire'  => 3600,
     'admin.passwordResetTokenExpire' => 3600,
-    'payment'                        => [
-        'paycom'  => [
-            'class'     => Paycom::className(),
-            'enabled'   => true,
-            'liveMode'  => PAYCOM_LIVE,
-            'merchants' => [
-            ],
-            'config'    => [
-                'minAmount'    => 500,
-                'maxAmount'    => 100000000,
-                'merchant_id'  => '6589656f5c8188fb6e90e859',
-                'merchant_key' => PAYCOM_LIVE ? 'vARaWm5E0e9yd4RJiRES1#H&D1ngs6K7ou3H' : 'E#SVCXrO?qR6dugHUsI%ITk6VWE#jcD7EmA4',
-                'payment_url'  => PAYCOM_LIVE ? 'https://checkout.paycom.uz' : 'https://test.paycom.uz',
-                'return_url'   => 'https://mexrli.complex-solutions.uz?payme=success',
-            ],
-        ],
-        'click'   => [
+
+    'payment' => [
+'paycom'  => [
+    'class'     => Paycom::className(),
+    'enabled'   => true,
+    'liveMode'  => PAYCOM_LIVE,
+    'merchants' => [],
+    'config'    => [
+        'minAmount'    => 100,
+        'maxAmount'    => 100000000,
+        'merchant_id'  => '6589656f5c8188fb6e90e859',
+        'merchant_key' => PAYCOM_LIVE ? '...' : '...',
+        'payment_url'  => PAYCOM_LIVE ? 'https://checkout.paycom.uz' : 'https://test.paycom.uz',
+        'return_url'   => 'https://mexrli.complex-solutions.uz?payme=success',
+    ],
+],
+
+        'click' => [
             'class'    => Click::className(),
             'enabled'  => true,
             'liveMode' => CLICK_LIVE,
@@ -47,7 +48,8 @@ return [
                 'maxAmount'        => 100000000,
             ],
         ],
-        'upay'    => [
+
+        'upay' => [
             'class'    => \common\models\payment\methods\Upay::className(),
             'enabled'  => true,
             'liveMode' => UPAY_LIVE,
@@ -56,12 +58,13 @@ return [
                 'maxAmount'   => 100000000,
                 'apiVersion'  => 1,
                 'serviceId'   => 372,
-                'allowedIps'  => ["91.212.89.86","84.54.115.115"],
+                'allowedIps'  => ["91.212.89.86", "84.54.115.115"],
                 'api_key'     => UPAY_LIVE ? 'Lz3eMzChgRurJx8e9sQGGzKQPxniAfYj' : 'CrjRsu1ytedVb2Xu50PmtKS4ABZGqFEN',
-                'payment_url' => UPAY_LIVE ? 'https://pay.smst.uz/prePay.do' : 'https://pay.smst.uz/prePay.do',
+                'payment_url' => 'https://pay.smst.uz/prePay.do',
             ],
         ],
-        'agr'     => [
+
+        'agr' => [
             'class'    => Agr::className(),
             'enabled'  => true,
             'liveMode' => AGR_LIVE,
@@ -74,7 +77,8 @@ return [
                 'return_url'  => AGR_LIVE ? 'http://www.qurbonlik.uz/order/success' : 'http://www.qurbonlik.uz/order/success',
             ],
         ],
-        'paynet'  => [
+
+        'paynet' => [
             'class'    => Paynet::className(),
             'enabled'  => true,
             'liveMode' => PAYNET_LIVE,
@@ -87,6 +91,7 @@ return [
                 'xsdLocation'     => 'https://mexrli.complex-solutions.uz/ProviderWebService.xsd',
             ],
         ],
+
         'apelsin' => [
             'class'    => \common\models\payment\methods\Apelsin::className(),
             'enabled'  => true,
@@ -97,5 +102,36 @@ return [
                 'allowedIps' => [],
             ],
         ],
+
+        'cash' => [
+            'class'    => Cash::className(),
+            'enabled'  => true,
+            'liveMode' => true,
+            'config'   => [
+                'minAmount' => 500,
+                'maxAmount' => 100000000,
+            ],
+        ],
+
+        'kapital' => [
+            'class'    => Kapital::className(),
+            'enabled'  => false,
+            'liveMode' => false,
+            'config'   => [
+                'minAmount' => 500,
+                'maxAmount' => 100000000,
+            ],
+        ],
+
+        'paymo' => [
+            'class'    => Paymo::className(),
+            'enabled'  => false,
+            'liveMode' => false,
+            'config'   => [
+                'minAmount' => 500,
+                'maxAmount' => 100000000,
+            ],
+        ],
+
     ],
 ];

@@ -75,6 +75,14 @@
         "codeception/base": "^2.2.3",
         "codeception/verify": "~0.3.1"
     },
+    "autoload": {
+    	"psr-4": {
+        "common\\": "common/",
+        "frontend\\": "frontend/",
+        "backend\\": "backend/",
+        "console\\": "console/"
+    }
+},
     "repositories": [
         {
             "type": "composer",
